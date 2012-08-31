@@ -9,6 +9,8 @@ class ColorWidget(QWidget):
 
     def __init__(self, parent = None):
         QWidget.__init__(self, parent)
+        self.color = QColor()
+        self.luminance = 0
 
         self.colorButton = KColorButton(self)
         self.colorButton.setFixedWidth(48)
@@ -28,12 +30,10 @@ class ColorWidget(QWidget):
         self.layout.addWidget(self.lighterButton, 0, 3)
         self.layout.addWidget(self.luminanceLabel, 1, 0, 1, 4)
 
-        self.colorButton.changed.connect(self.slotColorChanged)
+        self.colorButton.changed.connect(self.setColor)
         self.edit.textChanged.connect(self.slotTextChanged)
         self.darkerButton.clicked.connect(self.darken)
         self.lighterButton.clicked.connect(self.lighten)
-        self.color = QColor()
-        self.luminance = 0
         self.updateLuminanceLabel()
 
     def darken(self):
@@ -43,19 +43,22 @@ class ColorWidget(QWidget):
         self.setColor(self.color.lighter(120))
 
     def setColor(self, color):
-        self.edit.setText(color.name())
+        if self.color == color:
+            return
+        self.color = color
+        self.colorChanged.emit(color)
+        self.updateWidgets()
 
     def slotTextChanged(self, txt):
-        color = QColor(txt)
-        if color != self.color:
-            self.colorButton.setColor(color)
+        if QColor.isValidColor(txt):
+            self.setColor(QColor(txt))
 
-    def slotColorChanged(self, color):
-        self.color = color
-        self.edit.setText(color.name())
-        self.luminance = KColorUtils.luma(color)
+    def updateWidgets(self):
+        if not self.edit.hasFocus():
+            self.edit.setText(self.color.name())
+        self.colorButton.setColor(self.color)
+        self.luminance = KColorUtils.luma(self.color)
         self.updateLuminanceLabel()
-        self.colorChanged.emit(color)
 
     def updateLuminanceLabel(self):
         txt = i18n("Luminance: %1", KGlobal.locale().formatNumber(self.luminance, 3))
