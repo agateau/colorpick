@@ -4,6 +4,8 @@ from PyQt4.QtGui import *
 from PyKDE4.kdecore import *
 from PyKDE4.kdeui import *
 
+from coloreditor import ColorEditor
+
 class ColorWidget(QWidget):
     colorChanged = pyqtSignal(QColor)
 
@@ -20,6 +22,8 @@ class ColorWidget(QWidget):
         self.darkerButton = QPushButton(i18n("Darker"))
         self.lighterButton = QPushButton(i18n("Lighter"))
 
+        self.colorEditor = ColorEditor()
+
         self.luminanceLabel = QLabel()
 
         self.layout = QGridLayout(self)
@@ -28,9 +32,11 @@ class ColorWidget(QWidget):
         self.layout.addWidget(self.edit, 0, 1)
         self.layout.addWidget(self.darkerButton, 0, 2)
         self.layout.addWidget(self.lighterButton, 0, 3)
-        self.layout.addWidget(self.luminanceLabel, 1, 0, 1, 4)
+        self.layout.addWidget(self.colorEditor, 1, 0, 1, 4)
+        self.layout.addWidget(self.luminanceLabel, 2, 0, 1, 4)
 
         self.colorButton.changed.connect(self.setColor)
+        self.colorEditor.changed.connect(self.setColor)
         self.edit.textChanged.connect(self.slotTextChanged)
         self.darkerButton.clicked.connect(self.darken)
         self.lighterButton.clicked.connect(self.lighten)
@@ -57,6 +63,7 @@ class ColorWidget(QWidget):
         if not self.edit.hasFocus():
             self.edit.setText(self.color.name())
         self.colorButton.setColor(self.color)
+        self.colorEditor.setColor(self.color)
         self.luminance = KColorUtils.luma(self.color)
         self.updateLuminanceLabel()
 
