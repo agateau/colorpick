@@ -5,6 +5,7 @@ from PyKDE4.kdecore import *
 from PyKDE4.kdeui import *
 
 from coloreditor import ColorEditor
+from colorpicker import ColorPicker
 
 def bound(min, val, max):
     if val < min:
@@ -26,8 +27,12 @@ class ColorWidget(QWidget):
 
         self.edit = QLineEdit()
 
-        self.darkerButton = QPushButton(i18n("Darker"))
-        self.lighterButton = QPushButton(i18n("Lighter"))
+        self.darkerButton = QToolButton()
+        self.darkerButton.setArrowType(Qt.DownArrow)
+        self.lighterButton = QToolButton()
+        self.lighterButton.setArrowType(Qt.UpArrow)
+        self.pickerButton = QToolButton()
+        self.pickerButton.setIcon(KIcon("color-picker"))
 
         self.colorEditor = ColorEditor()
 
@@ -39,14 +44,16 @@ class ColorWidget(QWidget):
         self.layout.addWidget(self.edit, 0, 1)
         self.layout.addWidget(self.darkerButton, 0, 2)
         self.layout.addWidget(self.lighterButton, 0, 3)
-        self.layout.addWidget(self.colorEditor, 1, 0, 1, 4)
-        self.layout.addWidget(self.luminanceLabel, 2, 0, 1, 4)
+        self.layout.addWidget(self.pickerButton, 0, 4)
+        self.layout.addWidget(self.colorEditor, 1, 0, 1, 5)
+        self.layout.addWidget(self.luminanceLabel, 2, 0, 1, 5)
 
         self.colorButton.changed.connect(self.setColor)
         self.colorEditor.changed.connect(self.setColor)
         self.edit.textChanged.connect(self.slotTextChanged)
         self.darkerButton.clicked.connect(self.darken)
         self.lighterButton.clicked.connect(self.lighten)
+        self.pickerButton.clicked.connect(self.startPicking)
         self.updateLuminanceLabel()
 
     def darken(self):
@@ -82,3 +89,7 @@ class ColorWidget(QWidget):
         txt = i18n("Luminance: %1", KGlobal.locale().formatNumber(self.luminance, 3))
         self.luminanceLabel.setText(txt)
 
+    def startPicking(self):
+        picker = ColorPicker()
+        picker.picked.connect(self.setColor)
+        picker.exec_()
