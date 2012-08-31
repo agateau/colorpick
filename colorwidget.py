@@ -6,6 +6,13 @@ from PyKDE4.kdeui import *
 
 from coloreditor import ColorEditor
 
+def bound(min, val, max):
+    if val < min:
+        return min
+    if val > max:
+        return max
+    return val
+
 class ColorWidget(QWidget):
     colorChanged = pyqtSignal(QColor)
 
@@ -43,10 +50,14 @@ class ColorWidget(QWidget):
         self.updateLuminanceLabel()
 
     def darken(self):
-        self.setColor(self.color.darker(120))
+        self.adjustValue(-10)
 
     def lighten(self):
-        self.setColor(self.color.lighter(120))
+        self.adjustValue(+10)
+
+    def adjustValue(self, delta):
+        h, s, v, a = self.color.getHsv()
+        self.setColor(QColor.fromHsv(h, s, bound(0, v + delta, 255)))
 
     def setColor(self, color):
         if self.color == color:
