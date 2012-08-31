@@ -20,8 +20,6 @@ class ColorEditor(QWidget):
             selector = KGradientSelector()
             selector.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
             selector.setArrowDirection(Qt.UpArrow)
-            rgb = 0xFF << ((2 - row) * 8)
-            selector.setColors(Qt.black, QColor(rgb))
             selector.setMaximum(255)
 
             spinBox = QSpinBox()
@@ -34,8 +32,10 @@ class ColorEditor(QWidget):
             spinBox.valueChanged.connect(selector.setValue)
             selector.valueChanged.connect(spinBox.setValue)
             selector.valueChanged.connect(self.emitChanged)
+            selector.valueChanged.connect(self.updateSelectorColors)
 
             self.selectors.append(selector)
+        self.updateSelectorColors()
 
     def color(self):
         return QColor(*[x.value() for x in self.selectors])
@@ -47,3 +47,11 @@ class ColorEditor(QWidget):
 
     def emitChanged(self):
         self.changed.emit(self.color())
+
+    def updateSelectorColors(self):
+        baseRgb = self.color().rgb()
+        for row, selector in enumerate(self.selectors):
+            selectorMask = 0xFF << ((2 - row) * 8)
+            minColor = QColor(baseRgb & (0xFFFFFF ^ selectorMask))
+            maxColor = QColor(baseRgb | selectorMask)
+            selector.setColors(minColor, maxColor)
