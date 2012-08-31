@@ -11,29 +11,20 @@ from PyKDE4.kdeui import *
 
 from colorwidget import ColorWidget
 
+from ui_mainwindow import Ui_MainWindow
+
 # As per http://www.w3.org/TR/WCAG20/#visual-audio-contrast
 ACCEPTABLE_CONTRAST_RATIO = 3.
 GOOD_CONTRAST_RATIO = 4.5
 
 
-class Window(KMainWindow):
+class Window(KMainWindow, Ui_MainWindow):
     def __init__(self):
         KMainWindow.__init__(self)
-        self.bgColorWidget = ColorWidget()
-        self.fgColorWidget = ColorWidget()
-        self.ratioLabel = QLabel()
-        self.demoLabel = QLabel(i18n("Hello World"))
-        self.demoLabel.setAutoFillBackground(True)
 
         mainWidget = QWidget()
         self.setCentralWidget(mainWidget)
-        self.layout = QVBoxLayout(mainWidget)
-        self.layout.addWidget(self.bgColorWidget)
-        self.layout.addWidget(KSeparator())
-        self.layout.addWidget(self.fgColorWidget)
-        self.layout.addWidget(KSeparator())
-        self.layout.addWidget(self.ratioLabel)
-        self.layout.addWidget(self.demoLabel)
+        self.setupUi(mainWidget)
 
         self.bgColorWidget.colorChanged.connect(self.slotColorChanged)
         self.fgColorWidget.colorChanged.connect(self.slotColorChanged)
