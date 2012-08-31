@@ -34,6 +34,7 @@ class ColorWidget(QWidget):
         self.lighterButton.clicked.connect(self.lighten)
         self.color = QColor()
         self.luminance = 0
+        self.updateLuminanceLabel()
 
     def darken(self):
         self.setColor(self.color.darker(120))

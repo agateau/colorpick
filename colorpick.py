@@ -29,12 +29,15 @@ class Window(KMainWindow):
         self.setCentralWidget(mainWidget)
         self.layout = QVBoxLayout(mainWidget)
         self.layout.addWidget(self.bgColorWidget)
+        self.layout.addWidget(KSeparator())
         self.layout.addWidget(self.fgColorWidget)
+        self.layout.addWidget(KSeparator())
         self.layout.addWidget(self.ratioLabel)
         self.layout.addWidget(self.demoLabel)
 
         self.bgColorWidget.colorChanged.connect(self.slotColorChanged)
         self.fgColorWidget.colorChanged.connect(self.slotColorChanged)
+        self.updateRatio()
 
     def slotColorChanged(self):
         self.updateRatio()
