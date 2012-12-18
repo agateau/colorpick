@@ -26,6 +26,7 @@ class ColorWidget(QWidget):
         self.colorButton.setFixedWidth(48)
 
         self.edit = QLineEdit()
+        self.skipEditUpdate = False
 
         self.darkerButton = QToolButton()
         self.darkerButton.setArrowType(Qt.DownArrow)
@@ -75,10 +76,12 @@ class ColorWidget(QWidget):
 
     def slotTextChanged(self, txt):
         if QColor.isValidColor(txt):
+            self.skipEditUpdate = True
             self.setColor(QColor(txt))
+            self.skipEditUpdate = False
 
     def updateWidgets(self):
-        if not self.edit.hasFocus():
+        if not self.skipEditUpdate:
             self.edit.setText(self.color.name())
         self.colorButton.setColor(self.color)
         self.colorEditor.setColor(self.color)
