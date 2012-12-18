@@ -69,7 +69,19 @@ class ColorPicker(QDialog):
 
     def updatePosition(self):
         pos = QCursor.pos()
-        self.move(pos.x() + GRAB_SIZE, pos.y() + GRAB_SIZE)
+        desktopRect = QApplication.desktop().availableGeometry(pos)
+
+        newPos = QPoint()
+        if pos.x() + GRAB_SIZE + self.width() < desktopRect.width():
+            newPos.setX(pos.x() + GRAB_SIZE)
+        else:
+            newPos.setX(pos.x() - GRAB_SIZE - self.width())
+        if pos.y() + GRAB_SIZE + self.height() < desktopRect.height():
+            newPos.setY(pos.y() + GRAB_SIZE)
+        else:
+            newPos.setY(pos.y() - GRAB_SIZE - self.height())
+
+        self.move(newPos)
 
         wid = QApplication.desktop().winId()
         self.pix = QPixmap.grabWindow(wid, pos.x() - GRAB_SIZE / 2, pos.y() - GRAB_SIZE / 2, GRAB_SIZE, GRAB_SIZE)
