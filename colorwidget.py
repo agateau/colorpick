@@ -35,6 +35,13 @@ class ColorWidget(QWidget):
         self.pickerButton = QToolButton()
         self.pickerButton.setIcon(KIcon("color-picker"))
 
+        self.copyButton = QToolButton()
+        self.copyButton.setIcon(KIcon("edit-copy"))
+        self.copyButton.setPopupMode(QToolButton.InstantPopup)
+        self.copyMenu = QMenu(self.copyButton)
+        self.copyButton.setMenu(self.copyMenu)
+        self.copyMenu.aboutToShow.connect(self.fillCopyMenu)
+
         self.colorEditor = ColorEditor()
 
         self.luminanceLabel = QLabel()
@@ -46,8 +53,9 @@ class ColorWidget(QWidget):
         self.layout.addWidget(self.darkerButton, 0, 2)
         self.layout.addWidget(self.lighterButton, 0, 3)
         self.layout.addWidget(self.pickerButton, 0, 4)
-        self.layout.addWidget(self.colorEditor, 1, 0, 1, 5)
-        self.layout.addWidget(self.luminanceLabel, 2, 0, 1, 5)
+        self.layout.addWidget(self.copyButton, 0, 5)
+        self.layout.addWidget(self.colorEditor, 1, 0, 1, 6)
+        self.layout.addWidget(self.luminanceLabel, 2, 0, 1, 6)
 
         self.colorButton.changed.connect(self.setColor)
         self.colorEditor.changed.connect(self.setColor)
@@ -96,3 +104,22 @@ class ColorWidget(QWidget):
         picker = ColorPicker()
         picker.picked.connect(self.setColor)
         picker.exec_()
+
+    def fillCopyMenu(self):
+        self.copyMenu.clear()
+        dct = dict(red=self.color.red(), green=self.color.green(), blue=self.color.blue(), alpha=255)
+        formats = [
+            ("Inkscape", "{red:0>2x}{green:0>2x}{blue:0>2x}{alpha:0>2x}"),
+            ("Hexa with #", "#{red:0>2x}{green:0>2x}{blue:0>2x}"),
+            ("Quoted hexa with #", "\"#{red:0>2x}{green:0>2x}{blue:0>2x}\""),
+            ]
+        for caption, fmt in formats:
+            colorString = fmt.format(**dct)
+            txt = caption + ": " + colorString
+            action = self.copyMenu.addAction(txt)
+            action.setData(colorString)
+            action.triggered.connect(self.copyColor)
+
+    def copyColor(self):
+        colorString = self.sender().data().toString()
+        QApplication.clipboard().setText(colorString)
