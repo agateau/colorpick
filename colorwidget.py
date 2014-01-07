@@ -107,11 +107,15 @@ class ColorWidget(QWidget):
 
     def fillCopyMenu(self):
         self.copyMenu.clear()
-        dct = dict(red=self.color.red(), green=self.color.green(), blue=self.color.blue(), alpha=255)
+        dct = dict(
+            red=self.color.red(), green=self.color.green(), blue=self.color.blue(), alpha=255,
+            redf=self.color.redF(), greenf=self.color.greenF(), bluef=self.color.blueF(), alphaf=1.0,
+            )
         formats = [
             ("Inkscape", "{red:0>2x}{green:0>2x}{blue:0>2x}{alpha:0>2x}"),
             ("Hexa with #", "#{red:0>2x}{green:0>2x}{blue:0>2x}"),
             ("Quoted hexa with #", "\"#{red:0>2x}{green:0>2x}{blue:0>2x}\""),
+            ("Float values", "{redf:.3}, {greenf:.3}, {bluef:.3}, {alphaf:.3}"),
             ]
         for caption, fmt in formats:
             colorString = fmt.format(**dct)
