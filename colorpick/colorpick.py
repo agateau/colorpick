@@ -13,6 +13,8 @@ from colorwidget import ColorWidget
 
 from ui_mainwindow import Ui_MainWindow
 
+from . import __appname__, __version__
+
 # As per http://www.w3.org/TR/WCAG20/#visual-audio-contrast
 ACCEPTABLE_CONTRAST_RATIO = 3.
 GOOD_CONTRAST_RATIO = 4.5
@@ -55,13 +57,13 @@ def main():
     signal.signal(signal.SIGINT, signal.SIG_DFL)
 
     aboutData = KAboutData(
-        "colorpick", # appName
+        __appname__,
         "", # catalogName
         ki18n("Colorpick"), # programName
-        "1.0")
-    aboutData.setLicense(KAboutData.License_GPL_V3)
+        __version__)
+    aboutData.setLicense(KAboutData.License_BSD)
     aboutData.setShortDescription(ki18n("Color picker and contrast checker"))
-    aboutData.setCopyrightStatement(ki18n("(c) 2012 Aurélien Gâteau"))
+    aboutData.setCopyrightStatement(ki18n("(c) 2012-2014 Aurélien Gâteau"))
     aboutData.setProgramIconName("fill-color")
 
     KCmdLineArgs.init(sys.argv, aboutData)

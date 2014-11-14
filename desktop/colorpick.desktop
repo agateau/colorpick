@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=Colorpick
+GenericName=A color picker
+Icon=fill-color
+TryExec=colorpick
+Exec=colorpick
+Categories=Qt;KDE;Graphics;Utility;
