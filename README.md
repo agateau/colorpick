@@ -13,6 +13,10 @@ cursor keys, for precise picking.
 Finally, it lets you adjust colors and copy them to the clipboard as different
 formats.
 
+Colorpick is managed using the [lightweight project management policy][1].
+
+[1]: http://agateau.com/2014/lightweight-project-management
+
 ## Requirements
 
 - PyQt4
