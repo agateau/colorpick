@@ -4,8 +4,8 @@ from PyQt4.QtGui import *
 from PyKDE4.kdecore import *
 from PyKDE4.kdeui import *
 
-from coloreditor import ColorEditor
-from colorpicker import ColorPicker
+from .coloreditor import ColorEditor
+from .colorpicker import ColorPicker
 
 def bound(min, val, max):
     if val < min:

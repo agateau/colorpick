@@ -9,9 +9,9 @@ from PyQt4.QtGui import *
 from PyKDE4.kdecore import *
 from PyKDE4.kdeui import *
 
-from colorwidget import ColorWidget
+from .colorwidget import ColorWidget
 
-from ui_mainwindow import Ui_MainWindow
+from .ui_mainwindow import Ui_MainWindow
 
 from . import __appname__, __version__
 
@@ -63,7 +63,7 @@ def main():
         __version__)
     aboutData.setLicense(KAboutData.License_BSD)
     aboutData.setShortDescription(ki18n("Color picker and contrast checker"))
-    aboutData.setCopyrightStatement(ki18n("(c) 2012-2014 Aurélien Gâteau"))
+    aboutData.setCopyrightStatement(ki18n(bytes("(c) 2012-2014 Aurélien Gâteau", "utf-8")))
     aboutData.setProgramIconName("fill-color")
 
     KCmdLineArgs.init(sys.argv, aboutData)
