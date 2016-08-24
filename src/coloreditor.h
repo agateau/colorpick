@@ -24,6 +24,7 @@ private:
     QToolButton *createValueButton(int delta);
     void updateFromColor();
     void adjustValue(int delta);
+    void startPicking();
 
     QPushButton *mColorButton;
     QLineEdit *mLineEdit;

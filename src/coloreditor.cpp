@@ -22,6 +22,10 @@ ColorEditor::ColorEditor(QWidget *parent) : QWidget(parent)
     QToolButton *darkerButton = createValueButton(-10);
     QToolButton *lighterButton = createValueButton(10);
 
+    QToolButton *pickerButton = new QToolButton();
+    pickerButton->setIcon(QIcon::fromTheme("color-picker"));
+    pickerButton->setFocusPolicy(Qt::TabFocus);
+    connect(pickerButton, &QToolButton::clicked, this, &ColorEditor::startPicking);
     mLuminanceLabel = new QLabel();
 
     QGridLayout *layout = new QGridLayout(this);
@@ -29,6 +33,7 @@ ColorEditor::ColorEditor(QWidget *parent) : QWidget(parent)
     layout->addWidget(mLineEdit, 0, 1);
     layout->addWidget(darkerButton, 0, 2);
     layout->addWidget(lighterButton, 0, 3);
+    layout->addWidget(pickerButton, 0, 4);
 
     layout->addWidget(mLuminanceLabel, 2, 0, 1, 6);
 }
@@ -63,6 +68,11 @@ void ColorEditor::adjustValue(int delta)
     mColor.getHsv(&h, &s, &v, &a);
     v = qBound(0, v + delta, 255);
     setColor(QColor::fromHsv(h, s, v, a));
+}
+
+void ColorEditor::startPicking()
+{
+
 }
 
 QToolButton *ColorEditor::createValueButton(int delta)
