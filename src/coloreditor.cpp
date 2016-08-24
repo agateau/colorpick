@@ -2,10 +2,14 @@
 
 #include <KColorUtils>
 
+#include <QApplication>
+#include <QClipboard>
+#include <QDebug>
 #include <QGridLayout>
 #include <QLabel>
 #include <QLineEdit>
 #include <QLocale>
+#include <QMenu>
 #include <QPushButton>
 #include <QToolButton>
 
@@ -26,6 +30,16 @@ ColorEditor::ColorEditor(QWidget *parent) : QWidget(parent)
     pickerButton->setIcon(QIcon::fromTheme("color-picker"));
     pickerButton->setFocusPolicy(Qt::TabFocus);
     connect(pickerButton, &QToolButton::clicked, this, &ColorEditor::startPicking);
+
+    QToolButton *copyButton = new QToolButton();
+    copyButton->setIcon(QIcon::fromTheme("edit-copy"));
+    copyButton->setFocusPolicy(Qt::TabFocus);
+
+    mCopyMenu = new QMenu(this);
+    copyButton->setMenu(mCopyMenu);
+    copyButton->setPopupMode(QToolButton::InstantPopup);
+    connect(mCopyMenu, &QMenu::aboutToShow, this, &ColorEditor::fillCopyMenu);
+
     mLuminanceLabel = new QLabel();
 
     QGridLayout *layout = new QGridLayout(this);
@@ -34,6 +48,7 @@ ColorEditor::ColorEditor(QWidget *parent) : QWidget(parent)
     layout->addWidget(darkerButton, 0, 2);
     layout->addWidget(lighterButton, 0, 3);
     layout->addWidget(pickerButton, 0, 4);
+    layout->addWidget(copyButton, 0, 5);
 
     layout->addWidget(mLuminanceLabel, 2, 0, 1, 6);
 }
@@ -73,6 +88,36 @@ void ColorEditor::adjustValue(int delta)
 void ColorEditor::startPicking()
 {
 
+}
+
+void ColorEditor::fillCopyMenu()
+{
+    mCopyMenu->clear();
+    int r, g, b;
+    qreal rf, gf, bf;
+    mColor.getRgb(&r, &g, &b);
+    mColor.getRgbF(&rf, &gf, &bf);
+
+    auto myfloat = [](qreal value) {
+        return QString::number(value, 'f', 3);
+    };
+
+    auto hex = [](int value) {
+        return QString::number(value, 16).rightJustified(2, '0');
+    };
+
+    auto addColorAction = [this](const QString &text, const QString &value) {
+        QString fullText = ColorEditor::tr("%1: %2").arg(text).arg(value);
+        QAction *action = mCopyMenu->addAction(fullText);
+        connect(action, &QAction::triggered, this, [value]() {
+            QApplication::clipboard()->setText(value);
+        });
+    };
+
+    addColorAction(tr("Inkscape"), hex(r) + hex(g) + hex(b) + hex(255));
+    addColorAction(tr("Hexa with #"), "#" + hex(r) + hex(g) + hex(b));
+    addColorAction(tr("Quoted hexa with #"), "\"#" + hex(r) + hex(g) + hex(b) + "\"");
+    addColorAction(tr("Float values"), QString("%1, %2, %3").arg(myfloat(r)).arg(myfloat(g)).arg(myfloat(b)));
 }
 
 QToolButton *ColorEditor::createValueButton(int delta)

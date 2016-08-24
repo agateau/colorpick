@@ -5,6 +5,7 @@
 
 class QLabel;
 class QLineEdit;
+class QMenu;
 class QPushButton;
 class QToolButton;
 
@@ -25,9 +26,11 @@ private:
     void updateFromColor();
     void adjustValue(int delta);
     void startPicking();
+    void fillCopyMenu();
 
     QPushButton *mColorButton;
     QLineEdit *mLineEdit;
+    QMenu *mCopyMenu;
 
     QLabel *mLuminanceLabel;
 
