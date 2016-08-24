@@ -2,3 +2,4 @@
 *.pyc
 ui_*.py
 build
+CMakeLists.txt.user
