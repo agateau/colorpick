@@ -19,16 +19,16 @@ ColorEditor::ColorEditor(QWidget *parent) : QWidget(parent)
         }
     });
 
-    QToolButton *darker = createValueButton(-10);
-    QToolButton *lighter = createValueButton(10);
+    QToolButton *darkerButton = createValueButton(-10);
+    QToolButton *lighterButton = createValueButton(10);
 
     mLuminanceLabel = new QLabel();
 
     QGridLayout *layout = new QGridLayout(this);
     layout->addWidget(mColorButton, 0, 0);
     layout->addWidget(mLineEdit, 0, 1);
-    layout->addWidget(darker, 0, 2);
-    layout->addWidget(lighter, 0, 3);
+    layout->addWidget(darkerButton, 0, 2);
+    layout->addWidget(lighterButton, 0, 3);
 
     layout->addWidget(mLuminanceLabel, 2, 0, 1, 6);
 }
