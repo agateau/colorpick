@@ -3,6 +3,8 @@
 
 #include <QWidget>
 
+class RgbEditor;
+
 class QLabel;
 class QLineEdit;
 class QMenu;
@@ -31,6 +33,8 @@ private:
     QPushButton *mColorButton;
     QLineEdit *mLineEdit;
     QMenu *mCopyMenu;
+
+    RgbEditor *mRgbEditor;
 
     QLabel *mLuminanceLabel;
 

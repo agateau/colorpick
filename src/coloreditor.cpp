@@ -1,5 +1,7 @@
 #include "coloreditor.h"
 
+#include "rgbeditor.h"
+
 #include <KColorUtils>
 
 #include <QApplication>
@@ -40,6 +42,9 @@ ColorEditor::ColorEditor(QWidget *parent) : QWidget(parent)
     copyButton->setPopupMode(QToolButton::InstantPopup);
     connect(mCopyMenu, &QMenu::aboutToShow, this, &ColorEditor::fillCopyMenu);
 
+    mRgbEditor = new RgbEditor();
+    connect(mRgbEditor, &RgbEditor::colorChanged, this, &ColorEditor::setColor);
+
     mLuminanceLabel = new QLabel();
 
     QGridLayout *layout = new QGridLayout(this);
@@ -49,6 +54,8 @@ ColorEditor::ColorEditor(QWidget *parent) : QWidget(parent)
     layout->addWidget(lighterButton, 0, 3);
     layout->addWidget(pickerButton, 0, 4);
     layout->addWidget(copyButton, 0, 5);
+
+    layout->addWidget(mRgbEditor, 1, 0, 1, 6);
 
     layout->addWidget(mLuminanceLabel, 2, 0, 1, 6);
 }
@@ -71,6 +78,8 @@ void ColorEditor::updateFromColor()
     if (!mLineEdit->hasFocus()) {
         mLineEdit->setText(mColor.name());
     }
+
+    mRgbEditor->setColor(mColor);
 
     qreal luminance = KColorUtils::luma(mColor);
     QString lumaText = tr("Luminance: %1").arg(QLocale::system().toString(luminance, 'f', 3));
