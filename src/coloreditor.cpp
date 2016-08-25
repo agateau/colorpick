@@ -64,6 +64,11 @@ ColorEditor::ColorEditor(QWidget *parent) : QWidget(parent)
     layout->addWidget(mLuminanceLabel, 2, 0, 1, 6);
 }
 
+QColor ColorEditor::color() const
+{
+    return mColor;
+}
+
 void ColorEditor::setColor(const QColor &color)
 {
     if (mColor != color) {
