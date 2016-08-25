@@ -136,7 +136,7 @@ void ColorEditor::fillCopyMenu()
     addColorAction(tr("Inkscape"), hex(r) + hex(g) + hex(b) + hex(255));
     addColorAction(tr("Hexa with #"), "#" + hex(r) + hex(g) + hex(b));
     addColorAction(tr("Quoted hexa with #"), "\"#" + hex(r) + hex(g) + hex(b) + "\"");
-    addColorAction(tr("Float values"), QString("%1, %2, %3").arg(myfloat(r)).arg(myfloat(g)).arg(myfloat(b)));
+    addColorAction(tr("Float values"), QString("%1, %2, %3").arg(myfloat(rf)).arg(myfloat(gf)).arg(myfloat(bf)));
 }
 
 QToolButton *ColorEditor::createValueButton(int delta)
