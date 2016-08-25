@@ -90,7 +90,7 @@ void ColorEditor::updateFromColor()
     mRgbEditor->setColor(mColor);
 
     qreal luminance = KColorUtils::luma(mColor);
-    QString lumaText = tr("Luminance: %1").arg(QLocale::system().toString(luminance, 'f', 3));
+    QString lumaText = tr("Luminance: %1").arg(QLocale::system().toString(luminance, 'g', 3));
     mLuminanceLabel->setText(lumaText);
 }
 
@@ -118,7 +118,7 @@ void ColorEditor::fillCopyMenu()
     mColor.getRgbF(&rf, &gf, &bf);
 
     auto myfloat = [](qreal value) {
-        return QString::number(value, 'f', 3);
+        return QString::number(value, 'g', 3);
     };
 
     auto hex = [](int value) {
