@@ -5,10 +5,11 @@
 
 class RgbEditor;
 
+class KColorButton;
+
 class QLabel;
 class QLineEdit;
 class QMenu;
-class QPushButton;
 class QToolButton;
 
 class ColorEditor : public QWidget
@@ -30,7 +31,7 @@ private:
     void startPicking();
     void fillCopyMenu();
 
-    QPushButton *mColorButton;
+    KColorButton *mColorButton;
     QLineEdit *mLineEdit;
     QMenu *mCopyMenu;
 

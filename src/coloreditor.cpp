@@ -2,6 +2,7 @@
 
 #include "rgbeditor.h"
 
+#include <KColorButton>
 #include <KColorUtils>
 
 #include <QApplication>
@@ -17,7 +18,9 @@
 
 ColorEditor::ColorEditor(QWidget *parent) : QWidget(parent)
 {
-    mColorButton = new QPushButton();
+    mColorButton = new KColorButton();
+    connect(mColorButton, &KColorButton::changed, this, &ColorEditor::setColor);
+
     mLineEdit = new QLineEdit();
     connect(mLineEdit, &QLineEdit::textEdited, this, [this](const QString &text) {
         if (QColor::isValidColor(text)) {
@@ -71,9 +74,7 @@ void ColorEditor::setColor(const QColor &color)
 
 void ColorEditor::updateFromColor()
 {
-    QPalette pal = mColorButton->palette();
-    pal.setColor(QPalette::Button, mColor);
-    mColorButton->setPalette(pal);
+    mColorButton->setColor(mColor);
 
     if (!mLineEdit->hasFocus()) {
         mLineEdit->setText(mColor.name());

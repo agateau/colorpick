@@ -6,6 +6,19 @@
 #include <QLabel>
 #include <QSpinBox>
 
+inline int getColorComponent(const QColor &color, int index)
+{
+    if (index == 0) {
+        return color.red();
+    } else if (index == 1) {
+        return color.green();
+    } else if (index == 2) {
+        return color.blue();
+    } else {
+        return color.alpha();
+    }
+}
+
 RgbEditor::RgbEditor(QWidget *parent) : QWidget(parent)
 {
     QGridLayout *layout = new QGridLayout(this);
@@ -31,8 +44,8 @@ RgbEditor::RgbEditor(QWidget *parent) : QWidget(parent)
         layout->addWidget(selector, row, 1);
         layout->addWidget(spinBox, row, 2);
 
-        connect(selector, &KGradientSelector::valueChanged, this, &RgbEditor::updateFromSelectors);
-        connect(selector, &KGradientSelector::valueChanged, spinBox, &QSpinBox::setValue);
+        connect(selector, &KGradientSelector::sliderMoved, this, &RgbEditor::updateFromSelectors);
+        connect(selector, &KGradientSelector::sliderMoved, spinBox, &QSpinBox::setValue);
         connect(spinBox, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), selector, &KGradientSelector::setValue);
 
         mComponentSelectors[row] = selector;
@@ -54,9 +67,11 @@ QColor RgbEditor::color() const
 void RgbEditor::setColor(const QColor &newColor)
 {
     if (color() != newColor) {
-        mComponentSelectors[0]->setValue(newColor.red());
-        mComponentSelectors[1]->setValue(newColor.green());
-        mComponentSelectors[2]->setValue(newColor.blue());
+        for (int row = 0; row < 3; ++row) {
+            int value = getColorComponent(newColor, row);
+            mComponentSelectors[row]->setValue(value);
+            mComponentSpinBoxes[row]->setValue(value);
+        }
         updateSelectorGradients();
         colorChanged(newColor);
     }
