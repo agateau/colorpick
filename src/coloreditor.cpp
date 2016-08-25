@@ -51,6 +51,7 @@ ColorEditor::ColorEditor(QWidget *parent) : QWidget(parent)
     mLuminanceLabel = new QLabel();
 
     QGridLayout *layout = new QGridLayout(this);
+    layout->setContentsMargins(QMargins());
     layout->addWidget(mColorButton, 0, 0);
     layout->addWidget(mLineEdit, 0, 1);
     layout->addWidget(darkerButton, 0, 2);
