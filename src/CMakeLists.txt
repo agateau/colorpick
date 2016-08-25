@@ -1,6 +1,7 @@
 # Sources
 set(colorpick_SRCS
     coloreditor.cpp
+    colorpicker.cpp
     main.cpp
     rgbeditor.cpp
     window.cpp

@@ -1,5 +1,6 @@
 #include "coloreditor.h"
 
+#include "colorpicker.h"
 #include "rgbeditor.h"
 
 #include <KColorButton>
@@ -103,7 +104,9 @@ void ColorEditor::adjustValue(int delta)
 
 void ColorEditor::startPicking()
 {
-
+    ColorPicker *picker = new ColorPicker;
+    connect(picker, &ColorPicker::colorChanged, this, &ColorEditor::setColor);
+    picker->exec();
 }
 
 void ColorEditor::fillCopyMenu()
