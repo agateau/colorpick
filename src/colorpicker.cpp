@@ -124,7 +124,7 @@ void ColorPicker::updatePosition()
         qWarning() << "Could not find a screen containing" << pos;
         return;
     }
-    QRect desktopRect = screen->availableGeometry();
+    QRect desktopRect = screen->geometry();
 
     QPoint newPos;
     if (pos.x() + GRAB_SIZE + width() < desktopRect.width()) {
