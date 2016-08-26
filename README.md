@@ -19,12 +19,26 @@ Colorpick is managed using the [lightweight project management policy][1].
 
 ## Requirements
 
-- PyQt4
-- PyKDE4
+- cmake
+- Qt 5
+- KF5GuiAddons
+- KF5WidgetsAddons
 
 ## Installation
 
-See [INSTALL.md](INSTALL.md).
+Create a build directory and change to it:
+
+    mkdir build
+    cd build
+
+Run cmake and build:
+
+    cmake path/to/colorpick
+    make
+
+Install (must be run as root if installing to /usr or /usr/local):
+
+    make install
 
 ## Author
 
@@ -32,4 +46,4 @@ Aurélien Gâteau
 
 ## License
 
-BSD (except `kdistutils.py`, GPL2+)
+BSD
