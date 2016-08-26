@@ -14,6 +14,8 @@ static constexpr qreal GOOD_CONTRAST_RATIO = 4.5;
 
 Window::Window(QWidget *parent) : QMainWindow(parent)
 {
+    setWindowIcon(QIcon::fromTheme("fill-color"));
+
     QWidget *centralWidget = new QWidget;
 
     QVBoxLayout *layout = new QVBoxLayout(centralWidget);
