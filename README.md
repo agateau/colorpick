@@ -1,5 +1,7 @@
 # Colorpick: Color picker and contrast checker
 
+![Colorpick screenshot](screenshots/colorpick.png)
+
 Colorpick is a color picker, which makes it easy to check text readability by
 letting you pick a background and foreground color and computing the contrast
 between them.
