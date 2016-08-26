@@ -25,7 +25,9 @@ ColorEditor::ColorEditor(QWidget *parent) : QWidget(parent)
     mLineEdit = new QLineEdit();
     connect(mLineEdit, &QLineEdit::textEdited, this, [this](const QString &text) {
         if (QColor::isValidColor(text)) {
+            mFromLineEdit = true;
             setColor(QColor(text));
+            mFromLineEdit = false;
         }
     });
 
@@ -34,12 +36,10 @@ ColorEditor::ColorEditor(QWidget *parent) : QWidget(parent)
 
     QToolButton *pickerButton = new QToolButton();
     pickerButton->setIcon(QIcon::fromTheme("color-picker"));
-    pickerButton->setFocusPolicy(Qt::StrongFocus);
     connect(pickerButton, &QToolButton::clicked, this, &ColorEditor::startPicking);
 
     QToolButton *copyButton = new QToolButton();
     copyButton->setIcon(QIcon::fromTheme("edit-copy"));
-    copyButton->setFocusPolicy(Qt::TabFocus);
 
     mCopyMenu = new QMenu(this);
     copyButton->setMenu(mCopyMenu);
@@ -83,7 +83,7 @@ void ColorEditor::updateFromColor()
 {
     mColorButton->setColor(mColor);
 
-    if (!mLineEdit->hasFocus()) {
+    if (!mFromLineEdit) {
         mLineEdit->setText(mColor.name());
     }
 
@@ -142,7 +142,6 @@ void ColorEditor::fillCopyMenu()
 QToolButton *ColorEditor::createValueButton(int delta)
 {
     QToolButton *button = new QToolButton();
-    button->setFocusPolicy(Qt::StrongFocus);
     button->setArrowType(delta < 0 ? Qt::DownArrow : Qt::UpArrow);
     connect(button, &QToolButton::clicked, this, [this, delta]() {
         adjustValue(delta);

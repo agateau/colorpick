@@ -40,6 +40,8 @@ private:
     QLabel *mLuminanceLabel;
 
     QColor mColor;
+
+    bool mFromLineEdit = false;
 };
 
 #endif // COLOREDITOR_H
