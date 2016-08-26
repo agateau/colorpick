@@ -44,8 +44,8 @@ RgbEditor::RgbEditor(QWidget *parent) : QWidget(parent)
         layout->addWidget(selector, row, 1);
         layout->addWidget(spinBox, row, 2);
 
-        connect(selector, &KGradientSelector::sliderMoved, this, &RgbEditor::updateFromSelectors);
-        connect(selector, &KGradientSelector::sliderMoved, spinBox, &QSpinBox::setValue);
+        connect(selector, &KGradientSelector::valueChanged, this, &RgbEditor::updateFromSelectors);
+        connect(selector, &KGradientSelector::valueChanged, spinBox, &QSpinBox::setValue);
         connect(spinBox, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), selector, &KGradientSelector::setValue);
 
         mComponentSelectors[row] = selector;
@@ -69,8 +69,12 @@ void RgbEditor::setColor(const QColor &newColor)
     if (color() != newColor) {
         for (int row = 0; row < 3; ++row) {
             int value = getColorComponent(newColor, row);
+            mComponentSelectors[row]->blockSignals(true);
+            mComponentSpinBoxes[row]->blockSignals(true);
             mComponentSelectors[row]->setValue(value);
             mComponentSpinBoxes[row]->setValue(value);
+            mComponentSelectors[row]->blockSignals(false);
+            mComponentSpinBoxes[row]->blockSignals(false);
         }
         updateSelectorGradients();
         colorChanged(newColor);
