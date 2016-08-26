@@ -23,7 +23,7 @@ Window::Window(QWidget *parent) : QMainWindow(parent)
     mBgEditor = new ColorEditor;
     mFgEditor = new ColorEditor;
     mRatioLabel = new QLabel;
-    mDemoLabel = new QLabel(tr("Hello World!"));
+    mDemoLabel = new QLabel(tr("Contrast Example Text"));
     mDemoLabel->setAutoFillBackground(true);
     mDemoLabel->setFrameStyle(QFrame::Box);
     mDemoLabel->setMargin(6);
