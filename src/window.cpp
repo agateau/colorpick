@@ -55,7 +55,7 @@ void Window::updateRatioLabel()
     } else {
         level = tr("Good");
     }
-    QString text = tr("Contrast Ratio: %1:1 (%2)").arg(QLocale::system().toString(ratio, 'f', 2)).arg(level);
+    QString text = tr("Contrast Ratio: %1:1 (%2)").arg(QLocale::system().toString(ratio, 'g', 2)).arg(level);
     mRatioLabel->setText(text);
 }
 
