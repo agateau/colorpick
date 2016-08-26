@@ -1,6 +1,6 @@
 # Colorpick: Color picker and contrast checker
 
-![Colorpick screenshot](screenshots/colorpick.png)
+![Contrast check](screenshots/contrast.png)
 
 Colorpick is a color picker, which makes it easy to check text readability by
 letting you pick a background and foreground color and computing the contrast
@@ -21,7 +21,7 @@ Colorpick is managed using the [lightweight project management policy][1].
 
 ## Requirements
 
-- cmake
+- CMake
 - Qt 5
 - KF5GuiAddons
 - KF5WidgetsAddons
@@ -33,7 +33,7 @@ Create a build directory and change to it:
     mkdir build
     cd build
 
-Run cmake and build:
+Run CMake and build:
 
     cmake path/to/colorpick
     make
