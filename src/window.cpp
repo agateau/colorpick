@@ -24,6 +24,7 @@ Window::Window(QWidget *parent) : QMainWindow(parent)
     mDemoLabel = new QLabel(tr("Hello World!"));
     mDemoLabel->setAutoFillBackground(true);
     mDemoLabel->setFrameStyle(QFrame::Box);
+    mDemoLabel->setMargin(6);
 
     connect(mBgEditor, &ColorEditor::colorChanged, this, &Window::onColorChanged);
     connect(mFgEditor, &ColorEditor::colorChanged, this, &Window::onColorChanged);
