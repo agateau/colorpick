@@ -34,7 +34,7 @@ ColorEditor::ColorEditor(QWidget *parent) : QWidget(parent)
 
     QToolButton *pickerButton = new QToolButton();
     pickerButton->setIcon(QIcon::fromTheme("color-picker"));
-    pickerButton->setFocusPolicy(Qt::TabFocus);
+    pickerButton->setFocusPolicy(Qt::StrongFocus);
     connect(pickerButton, &QToolButton::clicked, this, &ColorEditor::startPicking);
 
     QToolButton *copyButton = new QToolButton();
@@ -142,7 +142,7 @@ void ColorEditor::fillCopyMenu()
 QToolButton *ColorEditor::createValueButton(int delta)
 {
     QToolButton *button = new QToolButton();
-    button->setFocusPolicy(Qt::TabFocus);
+    button->setFocusPolicy(Qt::StrongFocus);
     button->setArrowType(delta < 0 ? Qt::DownArrow : Qt::UpArrow);
     connect(button, &QToolButton::clicked, this, [this, delta]() {
         adjustValue(delta);
