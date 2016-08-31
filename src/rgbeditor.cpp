@@ -1,44 +1,37 @@
 #include "rgbeditor.h"
 
-#include <KSelector>
+#include "colorspace.h"
+#include "imagegradientselector.h"
 
 #include <QGridLayout>
+#include <QImage>
 #include <QLabel>
 #include <QSpinBox>
 
-inline int getColorComponent(const QColor &color, int index)
-{
-    if (index == 0) {
-        return color.red();
-    } else if (index == 1) {
-        return color.green();
-    } else if (index == 2) {
-        return color.blue();
-    } else {
-        return color.alpha();
-    }
-}
-
-RgbEditor::RgbEditor(QWidget *parent) : QWidget(parent)
+RgbEditor::RgbEditor(ColorSpace *colorSpace, QWidget *parent)
+    : QWidget(parent)
+    , mColorSpace(colorSpace)
 {
     QGridLayout *layout = new QGridLayout(this);
     layout->setContentsMargins(QMargins());
 
     QString labelTexts[3] = {
-        tr("R"),
-        tr("G"),
-        tr("B")
+        mColorSpace->name(0),
+        mColorSpace->name(1),
+        mColorSpace->name(2)
     };
     for (int row = 0; row < 3; ++row) {
         QLabel *label = new QLabel(labelTexts[row]);
 
-        KGradientSelector *selector = new KGradientSelector();
-        selector->setRange(0, 255);
+        int max = mColorSpace->maximum(row);
+
+        ImageGradientSelector *selector = new ImageGradientSelector();
+        selector->setRange(0, max);
         selector->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
         selector->setArrowDirection(Qt::UpArrow);
 
         QSpinBox *spinBox = new QSpinBox();
-        spinBox->setRange(0, 255);
+        spinBox->setRange(0, max);
 
         layout->addWidget(label, row, 0);
         layout->addWidget(selector, row, 1);
@@ -57,18 +50,18 @@ RgbEditor::RgbEditor(QWidget *parent) : QWidget(parent)
 
 QColor RgbEditor::color() const
 {
-    return QColor(
-        mComponentSelectors[0]->value(),
-        mComponentSelectors[1]->value(),
-        mComponentSelectors[2]->value()
-    );
+    QVector<int> values(3);
+    for (int row = 0; row < 3; ++row) {
+        values[row] = mComponentSelectors[row]->value();
+    }
+    return mColorSpace->fromValues(values);
 }
 
 void RgbEditor::setColor(const QColor &newColor)
 {
     if (color() != newColor) {
         for (int row = 0; row < 3; ++row) {
-            int value = getColorComponent(newColor, row);
+            int value = mColorSpace->value(newColor, row);
             mComponentSelectors[row]->blockSignals(true);
             mComponentSpinBoxes[row]->blockSignals(true);
             mComponentSelectors[row]->setValue(value);
@@ -81,14 +74,25 @@ void RgbEditor::setColor(const QColor &newColor)
     }
 }
 
+QImage RgbEditor::createGradientImage(int idx) const
+{
+    QVector<int> values = mColorSpace->values(color());
+
+    int max = mColorSpace->maximum(idx);
+    QImage image(max, 1, QImage::Format_ARGB32);
+    QRgb* ptr = reinterpret_cast<QRgb*>(image.scanLine(0));
+    for (int x = 0; x <= max; ++x, ++ptr) {
+        values[idx] = x;
+        *ptr = mColorSpace->fromValues(values).rgb();
+    }
+    return image;
+}
+
 void RgbEditor::updateSelectorGradients()
 {
-    QRgb baseRgb = color().rgb();
     for (int row = 0; row < 3; ++row) {
-        int selectorMask = 0xFF << ((2 - row) * 8);
-        QColor minColor = QColor(baseRgb & (0xFFFFFF ^ selectorMask));
-        QColor maxColor = QColor(baseRgb | selectorMask);
-        mComponentSelectors[row]->setColors(minColor, maxColor);
+        QImage image = createGradientImage(row);
+        mComponentSelectors[row]->setImage(image);
     }
 }
 

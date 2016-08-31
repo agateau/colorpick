@@ -3,7 +3,8 @@
 
 #include <QWidget>
 
-class KGradientSelector;
+class ColorSpace;
+class ImageGradientSelector;
 
 class QSpinBox;
 
@@ -11,7 +12,7 @@ class RgbEditor : public QWidget
 {
     Q_OBJECT
 public:
-    explicit RgbEditor(QWidget *parent = 0);
+    explicit RgbEditor(ColorSpace *colorSpace, QWidget *parent = 0);
 
     QColor color() const;
     void setColor(const QColor &color);
@@ -23,7 +24,10 @@ private:
     void updateSelectorGradients();
     void updateFromSelectors();
 
-    KGradientSelector *mComponentSelectors[3];
+    QImage createGradientImage(int idx) const;
+
+    ColorSpace *mColorSpace;
+    ImageGradientSelector *mComponentSelectors[3];
     QSpinBox *mComponentSpinBoxes[3];
 };
 

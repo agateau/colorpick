@@ -1,6 +1,8 @@
 #include "coloreditor.h"
 
 #include "colorpicker.h"
+#include "hsvcolorspace.h"
+#include "rgbcolorspace.h"
 #include "rgbeditor.h"
 
 #include <KColorButton>
@@ -46,7 +48,7 @@ ColorEditor::ColorEditor(QWidget *parent) : QWidget(parent)
     copyButton->setPopupMode(QToolButton::InstantPopup);
     connect(mCopyMenu, &QMenu::aboutToShow, this, &ColorEditor::fillCopyMenu);
 
-    mRgbEditor = new RgbEditor();
+    mRgbEditor = new RgbEditor(RgbColorSpace::instance());
     connect(mRgbEditor, &RgbEditor::colorChanged, this, &ColorEditor::setColor);
 
     mLuminanceLabel = new QLabel();
