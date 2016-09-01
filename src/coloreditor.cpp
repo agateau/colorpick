@@ -15,6 +15,7 @@
 #include <QLabel>
 #include <QLineEdit>
 #include <QLocale>
+#include <QMargins>
 #include <QMenu>
 #include <QPushButton>
 #include <QToolButton>
@@ -48,8 +49,11 @@ ColorEditor::ColorEditor(QWidget *parent) : QWidget(parent)
     copyButton->setPopupMode(QToolButton::InstantPopup);
     connect(mCopyMenu, &QMenu::aboutToShow, this, &ColorEditor::fillCopyMenu);
 
-    mComponentEditor = new ComponentEditor(RgbColorSpace::instance());
-    connect(mComponentEditor, &ComponentEditor::colorChanged, this, &ColorEditor::setColor);
+    QHBoxLayout *componentEditorLayout = new QHBoxLayout;
+    mRgbEditor = new ComponentEditor(RgbColorSpace::instance());
+    connect(mRgbEditor, &ComponentEditor::colorChanged, this, &ColorEditor::setColor);
+    mHsvEditor = new ComponentEditor(HsvColorSpace::instance());
+    connect(mHsvEditor, &ComponentEditor::colorChanged, this, &ColorEditor::setColor);
 
     mLuminanceLabel = new QLabel();
 
@@ -62,7 +66,11 @@ ColorEditor::ColorEditor(QWidget *parent) : QWidget(parent)
     layout->addWidget(pickerButton, 0, 4);
     layout->addWidget(copyButton, 0, 5);
 
-    layout->addWidget(mComponentEditor, 1, 0, 1, 6);
+    componentEditorLayout->setContentsMargins(QMargins());
+    componentEditorLayout->setSpacing(24);
+    componentEditorLayout->addWidget(mRgbEditor);
+    componentEditorLayout->addWidget(mHsvEditor);
+    layout->addLayout(componentEditorLayout, 1, 0, 1, 6);
 
     layout->addWidget(mLuminanceLabel, 2, 0, 1, 6);
 }
@@ -89,7 +97,8 @@ void ColorEditor::updateFromColor()
         mLineEdit->setText(mColor.name());
     }
 
-    mComponentEditor->setColor(mColor);
+    mRgbEditor->setColor(mColor);
+    mHsvEditor->setColor(mColor);
 
     qreal luminance = KColorUtils::luma(mColor);
     QString lumaText = tr("Luminance: %1").arg(QLocale::system().toString(luminance, 'g', 3));

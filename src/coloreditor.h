@@ -35,7 +35,8 @@ private:
     QLineEdit *mLineEdit;
     QMenu *mCopyMenu;
 
-    ComponentEditor *mComponentEditor;
+    ComponentEditor *mRgbEditor;
+    ComponentEditor *mHsvEditor;
 
     QLabel *mLuminanceLabel;
 

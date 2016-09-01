@@ -27,7 +27,8 @@ ComponentEditor::ComponentEditor(ColorSpace *colorSpace, QWidget *parent)
 
         ImageGradientSelector *selector = new ImageGradientSelector();
         selector->setRange(0, max);
-        selector->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
+        selector->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
+        selector->setMinimumWidth(220);
         selector->setArrowDirection(Qt::UpArrow);
 
         QSpinBox *spinBox = new QSpinBox();
