@@ -50,6 +50,7 @@ protected:
 ColorEditor::ColorEditor(QWidget *parent) : QWidget(parent)
 {
     mColorButton = new KColorButton();
+    mColorButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Minimum);
     connect(mColorButton, &KColorButton::changed, this, &ColorEditor::setColor);
 
     mLineEdit = new QLineEdit();
@@ -62,6 +63,7 @@ ColorEditor::ColorEditor(QWidget *parent) : QWidget(parent)
     });
 
     QToolButton *pickerButton = new QToolButton();
+    pickerButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Minimum);
     pickerButton->setIcon(QIcon::fromTheme("color-picker"));
     connect(pickerButton, &QToolButton::clicked, this, &ColorEditor::startPicking);
 
