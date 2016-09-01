@@ -16,8 +16,36 @@
 #include <QLocale>
 #include <QMargins>
 #include <QMenu>
+#include <QPainter>
 #include <QPushButton>
 #include <QToolButton>
+#include <QWidgetAction>
+
+/**
+ * A QToolButton which has no border and immediatly shows a menu (there is no way to alter the popup mode of the button
+ * created when adding an action directly to QLineEdit)
+ */
+class MenuLineEditButton : public QToolButton
+{
+public:
+    MenuLineEditButton(QMenu* menu)
+    {
+        setMenu(menu);
+        setPopupMode(QToolButton::InstantPopup);
+        setCursor(Qt::ArrowCursor);
+    }
+
+protected:
+    void paintEvent(QPaintEvent *) override
+    {
+        QPainter painter(this);
+        QIcon::Mode state = isDown() ? QIcon::Selected : QIcon::Normal;
+        QPixmap pix = icon().pixmap(size(), state, QIcon::Off);
+        QRect pixRect = QRect(QPoint(0, 0), pix.size() / pix.devicePixelRatio());
+        pixRect.moveCenter(rect().center());
+        painter.drawPixmap(pixRect, pix);
+    }
+};
 
 ColorEditor::ColorEditor(QWidget *parent) : QWidget(parent)
 {
@@ -37,13 +65,7 @@ ColorEditor::ColorEditor(QWidget *parent) : QWidget(parent)
     pickerButton->setIcon(QIcon::fromTheme("color-picker"));
     connect(pickerButton, &QToolButton::clicked, this, &ColorEditor::startPicking);
 
-    QToolButton *copyButton = new QToolButton();
-    copyButton->setIcon(QIcon::fromTheme("edit-copy"));
-
-    mCopyMenu = new QMenu(this);
-    copyButton->setMenu(mCopyMenu);
-    copyButton->setPopupMode(QToolButton::InstantPopup);
-    connect(mCopyMenu, &QMenu::aboutToShow, this, &ColorEditor::fillCopyMenu);
+    setupCopyButton();
 
     QBoxLayout *componentEditorLayout = new QVBoxLayout;
     mRgbEditor = new ComponentEditor(RgbColorSpace::instance());
@@ -55,12 +77,24 @@ ColorEditor::ColorEditor(QWidget *parent) : QWidget(parent)
     layout->addWidget(mColorButton, 0, 0);
     layout->addWidget(mLineEdit, 0, 1);
     layout->addWidget(pickerButton, 0, 2);
-    layout->addWidget(copyButton, 0, 3);
 
     componentEditorLayout->setContentsMargins(QMargins());
     componentEditorLayout->addWidget(mRgbEditor);
     componentEditorLayout->addWidget(mHsvEditor);
-    layout->addLayout(componentEditorLayout, 1, 0, 1, 4);
+    layout->addLayout(componentEditorLayout, 1, 0, 1, 3);
+}
+
+void ColorEditor::setupCopyButton()
+{
+    mCopyMenu = new QMenu(this);
+    connect(mCopyMenu, &QMenu::aboutToShow, this, &ColorEditor::fillCopyMenu);
+
+    MenuLineEditButton *copyButton = new MenuLineEditButton(mCopyMenu);
+    copyButton->setIcon(QIcon::fromTheme("edit-copy"));
+
+    QWidgetAction *copyAction = new QWidgetAction(this);
+    copyAction->setDefaultWidget(copyButton);
+    mLineEdit->addAction(copyAction, QLineEdit::TrailingPosition);
 }
 
 QColor ColorEditor::color() const

@@ -39,6 +39,7 @@ private:
     QColor mColor;
 
     bool mFromLineEdit = false;
+    void setupCopyButton();
 };
 
 #endif // COLOREDITOR_H
