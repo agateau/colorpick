@@ -25,9 +25,7 @@ Q_SIGNALS:
     void colorChanged(const QColor &color);
 
 private:
-    QToolButton *createValueButton(int delta);
     void updateFromColor();
-    void adjustValue(int delta);
     void startPicking();
     void fillCopyMenu();
 
@@ -37,8 +35,6 @@ private:
 
     ComponentEditor *mRgbEditor;
     ComponentEditor *mHsvEditor;
-
-    QLabel *mLuminanceLabel;
 
     QColor mColor;
 

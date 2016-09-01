@@ -14,6 +14,7 @@ ComponentEditor::ComponentEditor(ColorSpace *colorSpace, QWidget *parent)
 {
     QGridLayout *layout = new QGridLayout(this);
     layout->setContentsMargins(QMargins());
+    layout->setSpacing(0);
 
     QString labelTexts[3] = {
         mColorSpace->name(0),

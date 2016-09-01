@@ -21,7 +21,13 @@ Window::Window(QWidget *parent) : QMainWindow(parent)
     QVBoxLayout *layout = new QVBoxLayout(centralWidget);
 
     mBgEditor = new ColorEditor;
+
     mFgEditor = new ColorEditor;
+    mFgEditor->setAutoFillBackground(true);
+    QPalette pal = palette();
+    pal.setColor(QPalette::Window, pal.color(QPalette::Window).dark(110));
+    mFgEditor->setPalette(pal);
+
     mRatioLabel = new QLabel;
     mDemoLabel = new QLabel(tr("Contrast Example Text"));
     mDemoLabel->setAutoFillBackground(true);
@@ -31,6 +37,7 @@ Window::Window(QWidget *parent) : QMainWindow(parent)
     connect(mBgEditor, &ColorEditor::colorChanged, this, &Window::onColorChanged);
     connect(mFgEditor, &ColorEditor::colorChanged, this, &Window::onColorChanged);
 
+    layout->setContentsMargins(QMargins());
     layout->addWidget(mBgEditor);
     layout->addWidget(mFgEditor);
     layout->addWidget(mRatioLabel);
