@@ -7,7 +7,7 @@ set(colorpick_SRCS
     imagegradientselector.cpp
     main.cpp
     rgbcolorspace.cpp
-    rgbeditor.cpp
+    componenteditor.cpp
     window.cpp
     )
 

@@ -1,4 +1,4 @@
-#include "rgbeditor.h"
+#include "componenteditor.h"
 
 #include "colorspace.h"
 #include "imagegradientselector.h"
@@ -8,7 +8,7 @@
 #include <QLabel>
 #include <QSpinBox>
 
-RgbEditor::RgbEditor(ColorSpace *colorSpace, QWidget *parent)
+ComponentEditor::ComponentEditor(ColorSpace *colorSpace, QWidget *parent)
     : QWidget(parent)
     , mColorSpace(colorSpace)
 {
@@ -37,7 +37,7 @@ RgbEditor::RgbEditor(ColorSpace *colorSpace, QWidget *parent)
         layout->addWidget(selector, row, 1);
         layout->addWidget(spinBox, row, 2);
 
-        connect(selector, &KGradientSelector::valueChanged, this, &RgbEditor::updateFromSelectors);
+        connect(selector, &KGradientSelector::valueChanged, this, &ComponentEditor::updateFromSelectors);
         connect(selector, &KGradientSelector::valueChanged, spinBox, &QSpinBox::setValue);
         connect(spinBox, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), selector, &KGradientSelector::setValue);
 
@@ -48,7 +48,7 @@ RgbEditor::RgbEditor(ColorSpace *colorSpace, QWidget *parent)
     updateSelectorGradients();
 }
 
-QColor RgbEditor::color() const
+QColor ComponentEditor::color() const
 {
     QVector<int> values(3);
     for (int row = 0; row < 3; ++row) {
@@ -57,7 +57,7 @@ QColor RgbEditor::color() const
     return mColorSpace->fromValues(values);
 }
 
-void RgbEditor::setColor(const QColor &newColor)
+void ComponentEditor::setColor(const QColor &newColor)
 {
     if (color() != newColor) {
         for (int row = 0; row < 3; ++row) {
@@ -74,7 +74,7 @@ void RgbEditor::setColor(const QColor &newColor)
     }
 }
 
-QImage RgbEditor::createGradientImage(int idx) const
+QImage ComponentEditor::createGradientImage(int idx) const
 {
     QVector<int> values = mColorSpace->values(color());
 
@@ -88,7 +88,7 @@ QImage RgbEditor::createGradientImage(int idx) const
     return image;
 }
 
-void RgbEditor::updateSelectorGradients()
+void ComponentEditor::updateSelectorGradients()
 {
     for (int row = 0; row < 3; ++row) {
         QImage image = createGradientImage(row);
@@ -96,7 +96,7 @@ void RgbEditor::updateSelectorGradients()
     }
 }
 
-void RgbEditor::updateFromSelectors()
+void ComponentEditor::updateFromSelectors()
 {
     updateSelectorGradients();
     colorChanged(color());

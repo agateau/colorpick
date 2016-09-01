@@ -1,5 +1,5 @@
-#ifndef RGBEDITOR_H
-#define RGBEDITOR_H
+#ifndef COMPONENTEDITOR_H
+#define COMPONENTEDITOR_H
 
 #include <QWidget>
 
@@ -8,11 +8,14 @@ class ImageGradientSelector;
 
 class QSpinBox;
 
-class RgbEditor : public QWidget
+/**
+ * Edit a color individual components, the edited components depend on the supplied colorspace
+ */
+class ComponentEditor : public QWidget
 {
     Q_OBJECT
 public:
-    explicit RgbEditor(ColorSpace *colorSpace, QWidget *parent = 0);
+    explicit ComponentEditor(ColorSpace *colorSpace, QWidget *parent = 0);
 
     QColor color() const;
     void setColor(const QColor &color);
@@ -31,4 +34,4 @@ private:
     QSpinBox *mComponentSpinBoxes[3];
 };
 
-#endif // RGBEDITOR_H
+#endif // COMPONENTEDITOR_H

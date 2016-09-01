@@ -3,7 +3,7 @@
 #include "colorpicker.h"
 #include "hsvcolorspace.h"
 #include "rgbcolorspace.h"
-#include "rgbeditor.h"
+#include "componenteditor.h"
 
 #include <KColorButton>
 #include <KColorUtils>
@@ -48,8 +48,8 @@ ColorEditor::ColorEditor(QWidget *parent) : QWidget(parent)
     copyButton->setPopupMode(QToolButton::InstantPopup);
     connect(mCopyMenu, &QMenu::aboutToShow, this, &ColorEditor::fillCopyMenu);
 
-    mRgbEditor = new RgbEditor(RgbColorSpace::instance());
-    connect(mRgbEditor, &RgbEditor::colorChanged, this, &ColorEditor::setColor);
+    mComponentEditor = new ComponentEditor(RgbColorSpace::instance());
+    connect(mComponentEditor, &ComponentEditor::colorChanged, this, &ColorEditor::setColor);
 
     mLuminanceLabel = new QLabel();
 
@@ -62,7 +62,7 @@ ColorEditor::ColorEditor(QWidget *parent) : QWidget(parent)
     layout->addWidget(pickerButton, 0, 4);
     layout->addWidget(copyButton, 0, 5);
 
-    layout->addWidget(mRgbEditor, 1, 0, 1, 6);
+    layout->addWidget(mComponentEditor, 1, 0, 1, 6);
 
     layout->addWidget(mLuminanceLabel, 2, 0, 1, 6);
 }
@@ -89,7 +89,7 @@ void ColorEditor::updateFromColor()
         mLineEdit->setText(mColor.name());
     }
 
-    mRgbEditor->setColor(mColor);
+    mComponentEditor->setColor(mColor);
 
     qreal luminance = KColorUtils::luma(mColor);
     QString lumaText = tr("Luminance: %1").arg(QLocale::system().toString(luminance, 'g', 3));
