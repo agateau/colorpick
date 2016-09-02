@@ -3,6 +3,7 @@ set(colorpick_SRCS
     colorspace.cpp
     coloreditor.cpp
     colorpicker.cpp
+    contrastpreview.cpp
     hsvcolorspace.cpp
     imagegradientselector.cpp
     main.cpp
