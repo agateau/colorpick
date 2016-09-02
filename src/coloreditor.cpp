@@ -10,12 +10,15 @@
 #include <QApplication>
 #include <QClipboard>
 #include <QDebug>
+#include <QDragEnterEvent>
+#include <QDropEvent>
 #include <QGridLayout>
 #include <QLabel>
 #include <QLineEdit>
 #include <QLocale>
 #include <QMargins>
 #include <QMenu>
+#include <QMimeData>
 #include <QPainter>
 #include <QPushButton>
 #include <QToolButton>
@@ -49,6 +52,8 @@ protected:
 
 ColorEditor::ColorEditor(QWidget *parent) : QWidget(parent)
 {
+    setAcceptDrops(true);
+
     mColorButton = new KColorButton();
     mColorButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Minimum);
     connect(mColorButton, &KColorButton::changed, this, &ColorEditor::setColor);
@@ -111,6 +116,19 @@ void ColorEditor::setColor(const QColor &color)
         updateFromColor();
         colorChanged(mColor);
     }
+}
+
+void ColorEditor::dragEnterEvent(QDragEnterEvent *event)
+{
+    if (event->mimeData()->hasColor()) {
+        event->acceptProposedAction();
+    }
+}
+
+void ColorEditor::dropEvent(QDropEvent *event)
+{
+    QColor color = qvariant_cast<QColor>(event->mimeData()->colorData());
+    setColor(color);
 }
 
 void ColorEditor::updateFromColor()

@@ -24,6 +24,10 @@ public:
 Q_SIGNALS:
     void colorChanged(const QColor &color);
 
+protected:
+    void dragEnterEvent(QDragEnterEvent *event) override;
+    void dropEvent(QDropEvent *event) override;
+
 private:
     void updateFromColor();
     void startPicking();
