@@ -69,7 +69,6 @@ ColorEditor::ColorEditor(QWidget *parent) : QWidget(parent)
 
     setupCopyButton();
 
-    QBoxLayout *componentEditorLayout = new QVBoxLayout;
     mRgbEditor = new ComponentEditor(RgbColorSpace::instance());
     connect(mRgbEditor, &ComponentEditor::colorChanged, this, &ColorEditor::setColor);
     mHsvEditor = new ComponentEditor(HsvColorSpace::instance());
@@ -80,6 +79,7 @@ ColorEditor::ColorEditor(QWidget *parent) : QWidget(parent)
     layout->addWidget(mLineEdit, 0, 1);
     layout->addWidget(pickerButton, 0, 2);
 
+    QBoxLayout *componentEditorLayout = new QVBoxLayout;
     componentEditorLayout->setContentsMargins(QMargins());
     componentEditorLayout->addWidget(mRgbEditor);
     componentEditorLayout->addWidget(mHsvEditor);

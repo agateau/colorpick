@@ -12,6 +12,7 @@ Window::Window(QWidget *parent) : QMainWindow(parent)
     QWidget *centralWidget = new QWidget;
 
     QVBoxLayout *layout = new QVBoxLayout(centralWidget);
+    layout->setSpacing(0);
 
     mBgEditor = new ColorEditor;
 
