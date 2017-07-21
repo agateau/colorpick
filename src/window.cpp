@@ -14,9 +14,9 @@ Window::Window(QWidget *parent) : QMainWindow(parent)
     QVBoxLayout *layout = new QVBoxLayout(centralWidget);
     layout->setSpacing(0);
 
-    mBgEditor = new ColorEditor;
+    mBgEditor = new ColorEditor(QIcon::fromTheme("format-fill-color"));
 
-    mFgEditor = new ColorEditor;
+    mFgEditor = new ColorEditor(QIcon::fromTheme("format-text-color"));
     mFgEditor->setAutoFillBackground(true);
     QPalette pal = palette();
     pal.setColor(QPalette::Window, pal.color(QPalette::Window).dark(110));

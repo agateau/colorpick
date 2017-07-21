@@ -50,9 +50,12 @@ protected:
     }
 };
 
-ColorEditor::ColorEditor(QWidget *parent) : QWidget(parent)
+ColorEditor::ColorEditor(const QIcon &icon, QWidget *parent) : QWidget(parent)
 {
     setAcceptDrops(true);
+
+    QLabel *iconLabel = new QLabel;
+    iconLabel->setPixmap(icon.pixmap(40, 40));
 
     mColorButton = new KColorButton();
     mColorButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Minimum);
@@ -80,15 +83,16 @@ ColorEditor::ColorEditor(QWidget *parent) : QWidget(parent)
     connect(mHsvEditor, &ComponentEditor::colorChanged, this, &ColorEditor::setColor);
 
     QGridLayout *layout = new QGridLayout(this);
-    layout->addWidget(mColorButton, 0, 0);
-    layout->addWidget(mLineEdit, 0, 1);
-    layout->addWidget(pickerButton, 0, 2);
+    layout->addWidget(iconLabel, 0, 0, 2, 1, Qt::AlignTop);
+    layout->addWidget(mColorButton, 0, 1);
+    layout->addWidget(mLineEdit, 0, 2);
+    layout->addWidget(pickerButton, 0, 3);
 
     QBoxLayout *componentEditorLayout = new QVBoxLayout;
     componentEditorLayout->setContentsMargins(QMargins());
     componentEditorLayout->addWidget(mRgbEditor);
     componentEditorLayout->addWidget(mHsvEditor);
-    layout->addLayout(componentEditorLayout, 1, 0, 1, 3);
+    layout->addLayout(componentEditorLayout, 1, 1, 1, 3);
 }
 
 void ColorEditor::setupCopyButton()
