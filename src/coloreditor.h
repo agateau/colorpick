@@ -3,7 +3,7 @@
 
 #include <QWidget>
 
-class RgbEditor;
+class ComponentEditor;
 
 class KColorButton;
 
@@ -16,7 +16,7 @@ class ColorEditor : public QWidget
 {
     Q_OBJECT
 public:
-    explicit ColorEditor(QWidget *parent = 0);
+    explicit ColorEditor(const QIcon &icon, QWidget *parent = 0);
 
     QColor color() const;
     void setColor(const QColor &color);
@@ -24,10 +24,12 @@ public:
 Q_SIGNALS:
     void colorChanged(const QColor &color);
 
+protected:
+    void dragEnterEvent(QDragEnterEvent *event) override;
+    void dropEvent(QDropEvent *event) override;
+
 private:
-    QToolButton *createValueButton(int delta);
     void updateFromColor();
-    void adjustValue(int delta);
     void startPicking();
     void fillCopyMenu();
 
@@ -35,13 +37,13 @@ private:
     QLineEdit *mLineEdit;
     QMenu *mCopyMenu;
 
-    RgbEditor *mRgbEditor;
-
-    QLabel *mLuminanceLabel;
+    ComponentEditor *mRgbEditor;
+    ComponentEditor *mHsvEditor;
 
     QColor mColor;
 
     bool mFromLineEdit = false;
+    void setupCopyButton();
 };
 
 #endif // COLOREDITOR_H

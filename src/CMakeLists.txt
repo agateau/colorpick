@@ -1,9 +1,14 @@
 # Sources
 set(colorpick_SRCS
+    colorspace.cpp
     coloreditor.cpp
     colorpicker.cpp
+    contrastpreview.cpp
+    hsvcolorspace.cpp
+    imagegradientselector.cpp
     main.cpp
-    rgbeditor.cpp
+    rgbcolorspace.cpp
+    componenteditor.cpp
     window.cpp
     )
 

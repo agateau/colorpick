@@ -1,25 +1,64 @@
 #include "coloreditor.h"
 
 #include "colorpicker.h"
-#include "rgbeditor.h"
+#include "hsvcolorspace.h"
+#include "rgbcolorspace.h"
+#include "componenteditor.h"
 
 #include <KColorButton>
-#include <KColorUtils>
 
 #include <QApplication>
 #include <QClipboard>
 #include <QDebug>
+#include <QDragEnterEvent>
+#include <QDropEvent>
 #include <QGridLayout>
 #include <QLabel>
 #include <QLineEdit>
 #include <QLocale>
+#include <QMargins>
 #include <QMenu>
+#include <QMimeData>
+#include <QPainter>
 #include <QPushButton>
 #include <QToolButton>
+#include <QWidgetAction>
 
-ColorEditor::ColorEditor(QWidget *parent) : QWidget(parent)
+/**
+ * A QToolButton which has no border and immediatly shows a menu (there is no way to alter the popup mode of the button
+ * created when adding an action directly to QLineEdit)
+ */
+class MenuLineEditButton : public QToolButton
 {
+public:
+    MenuLineEditButton(QMenu* menu)
+    {
+        setMenu(menu);
+        setPopupMode(QToolButton::InstantPopup);
+        setCursor(Qt::ArrowCursor);
+    }
+
+protected:
+    void paintEvent(QPaintEvent *) override
+    {
+        QPainter painter(this);
+        QIcon::Mode state = isDown() ? QIcon::Selected : QIcon::Normal;
+        QPixmap pix = icon().pixmap(size(), state, QIcon::Off);
+        QRect pixRect = QRect(QPoint(0, 0), pix.size() / pix.devicePixelRatio());
+        pixRect.moveCenter(rect().center());
+        painter.drawPixmap(pixRect, pix);
+    }
+};
+
+ColorEditor::ColorEditor(const QIcon &icon, QWidget *parent) : QWidget(parent)
+{
+    setAcceptDrops(true);
+
+    QLabel *iconLabel = new QLabel;
+    iconLabel->setPixmap(icon.pixmap(40, 40));
+
     mColorButton = new KColorButton();
+    mColorButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Minimum);
     connect(mColorButton, &KColorButton::changed, this, &ColorEditor::setColor);
 
     mLineEdit = new QLineEdit();
@@ -31,38 +70,42 @@ ColorEditor::ColorEditor(QWidget *parent) : QWidget(parent)
         }
     });
 
-    QToolButton *darkerButton = createValueButton(-10);
-    QToolButton *lighterButton = createValueButton(10);
-
     QToolButton *pickerButton = new QToolButton();
+    pickerButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Minimum);
     pickerButton->setIcon(QIcon::fromTheme("color-picker"));
     connect(pickerButton, &QToolButton::clicked, this, &ColorEditor::startPicking);
 
-    QToolButton *copyButton = new QToolButton();
-    copyButton->setIcon(QIcon::fromTheme("edit-copy"));
+    setupCopyButton();
 
-    mCopyMenu = new QMenu(this);
-    copyButton->setMenu(mCopyMenu);
-    copyButton->setPopupMode(QToolButton::InstantPopup);
-    connect(mCopyMenu, &QMenu::aboutToShow, this, &ColorEditor::fillCopyMenu);
-
-    mRgbEditor = new RgbEditor();
-    connect(mRgbEditor, &RgbEditor::colorChanged, this, &ColorEditor::setColor);
-
-    mLuminanceLabel = new QLabel();
+    mRgbEditor = new ComponentEditor(RgbColorSpace::instance());
+    connect(mRgbEditor, &ComponentEditor::colorChanged, this, &ColorEditor::setColor);
+    mHsvEditor = new ComponentEditor(HsvColorSpace::instance());
+    connect(mHsvEditor, &ComponentEditor::colorChanged, this, &ColorEditor::setColor);
 
     QGridLayout *layout = new QGridLayout(this);
-    layout->setContentsMargins(QMargins());
-    layout->addWidget(mColorButton, 0, 0);
-    layout->addWidget(mLineEdit, 0, 1);
-    layout->addWidget(darkerButton, 0, 2);
-    layout->addWidget(lighterButton, 0, 3);
-    layout->addWidget(pickerButton, 0, 4);
-    layout->addWidget(copyButton, 0, 5);
+    layout->addWidget(iconLabel, 0, 0, 2, 1, Qt::AlignTop);
+    layout->addWidget(mColorButton, 0, 1);
+    layout->addWidget(mLineEdit, 0, 2);
+    layout->addWidget(pickerButton, 0, 3);
 
-    layout->addWidget(mRgbEditor, 1, 0, 1, 6);
+    QBoxLayout *componentEditorLayout = new QVBoxLayout;
+    componentEditorLayout->setContentsMargins(QMargins());
+    componentEditorLayout->addWidget(mRgbEditor);
+    componentEditorLayout->addWidget(mHsvEditor);
+    layout->addLayout(componentEditorLayout, 1, 1, 1, 3);
+}
 
-    layout->addWidget(mLuminanceLabel, 2, 0, 1, 6);
+void ColorEditor::setupCopyButton()
+{
+    mCopyMenu = new QMenu(this);
+    connect(mCopyMenu, &QMenu::aboutToShow, this, &ColorEditor::fillCopyMenu);
+
+    MenuLineEditButton *copyButton = new MenuLineEditButton(mCopyMenu);
+    copyButton->setIcon(QIcon::fromTheme("edit-copy"));
+
+    QWidgetAction *copyAction = new QWidgetAction(this);
+    copyAction->setDefaultWidget(copyButton);
+    mLineEdit->addAction(copyAction, QLineEdit::TrailingPosition);
 }
 
 QColor ColorEditor::color() const
@@ -79,6 +122,19 @@ void ColorEditor::setColor(const QColor &color)
     }
 }
 
+void ColorEditor::dragEnterEvent(QDragEnterEvent *event)
+{
+    if (event->mimeData()->hasColor()) {
+        event->acceptProposedAction();
+    }
+}
+
+void ColorEditor::dropEvent(QDropEvent *event)
+{
+    QColor color = qvariant_cast<QColor>(event->mimeData()->colorData());
+    setColor(color);
+}
+
 void ColorEditor::updateFromColor()
 {
     mColorButton->setColor(mColor);
@@ -88,18 +144,7 @@ void ColorEditor::updateFromColor()
     }
 
     mRgbEditor->setColor(mColor);
-
-    qreal luminance = KColorUtils::luma(mColor);
-    QString lumaText = tr("Luminance: %1").arg(QLocale::system().toString(luminance, 'g', 3));
-    mLuminanceLabel->setText(lumaText);
-}
-
-void ColorEditor::adjustValue(int delta)
-{
-    int h, s, v, a;
-    mColor.getHsv(&h, &s, &v, &a);
-    v = qBound(0, v + delta, 255);
-    setColor(QColor::fromHsv(h, s, v, a));
+    mHsvEditor->setColor(mColor);
 }
 
 void ColorEditor::startPicking()
@@ -137,14 +182,4 @@ void ColorEditor::fillCopyMenu()
     addColorAction(tr("Hexa with #"), "#" + hex(r) + hex(g) + hex(b));
     addColorAction(tr("Quoted hexa with #"), "\"#" + hex(r) + hex(g) + hex(b) + "\"");
     addColorAction(tr("Float values"), QString("%1, %2, %3").arg(myfloat(rf)).arg(myfloat(gf)).arg(myfloat(bf)));
-}
-
-QToolButton *ColorEditor::createValueButton(int delta)
-{
-    QToolButton *button = new QToolButton();
-    button->setArrowType(delta < 0 ? Qt::DownArrow : Qt::UpArrow);
-    connect(button, &QToolButton::clicked, this, [this, delta]() {
-        adjustValue(delta);
-    });
-    return button;
 }
