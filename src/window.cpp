@@ -7,8 +7,6 @@
 
 Window::Window(QWidget *parent) : QMainWindow(parent)
 {
-    setWindowIcon(QIcon::fromTheme("fill-color"));
-
     QWidget *centralWidget = new QWidget;
 
     QVBoxLayout *layout = new QVBoxLayout(centralWidget);
