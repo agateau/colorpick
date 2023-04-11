@@ -171,7 +171,7 @@ void ColorEditor::fillCopyMenu()
     };
 
     auto addColorAction = [this](const QString &text, const QString &value) {
-        QString fullText = ColorEditor::tr("%1: %2").arg(text).arg(value);
+        QString fullText = ColorEditor::tr("%1: %2").arg(text, value);
         QAction *action = mCopyMenu->addAction(fullText);
         connect(action, &QAction::triggered, this, [value]() {
             QApplication::clipboard()->setText(value);
@@ -181,5 +181,7 @@ void ColorEditor::fillCopyMenu()
     addColorAction(tr("Inkscape"), hex(r) + hex(g) + hex(b) + hex(255));
     addColorAction(tr("Hexa with #"), "#" + hex(r) + hex(g) + hex(b));
     addColorAction(tr("Quoted hexa with #"), "\"#" + hex(r) + hex(g) + hex(b) + "\"");
-    addColorAction(tr("Float values"), QString("%1, %2, %3").arg(myfloat(rf)).arg(myfloat(gf)).arg(myfloat(bf)));
+    addColorAction(tr("Float values"), QString("%1, %2, %3").arg(myfloat(rf), myfloat(gf), myfloat(bf)));
+    addColorAction(tr("Int values"), QString("%1, %2, %3").arg(r).arg(g).arg(b));
+    addColorAction(tr("CSS RGB Value"), QString("rgb(%1, %2, %3)").arg(r).arg(g).arg(b));
 }

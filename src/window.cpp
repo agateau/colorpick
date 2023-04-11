@@ -17,7 +17,7 @@ Window::Window(QWidget *parent) : QMainWindow(parent)
     mFgEditor = new ColorEditor(QIcon::fromTheme("format-text-color"));
     mFgEditor->setAutoFillBackground(true);
     QPalette pal = palette();
-    pal.setColor(QPalette::Window, pal.color(QPalette::Window).dark(110));
+    pal.setColor(QPalette::Window, pal.color(QPalette::Window).darker(110));
     mFgEditor->setPalette(pal);
 
     ContrastPreview *preview = new ContrastPreview;
