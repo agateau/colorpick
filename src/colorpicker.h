@@ -27,6 +27,7 @@ private:
 
     QTimer *mTimer;
     QPixmap mPixmap;
+    qreal mScaleFactor;
 };
 
 #endif // COLORPICKER_H

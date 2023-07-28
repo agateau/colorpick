@@ -17,11 +17,31 @@ static constexpr int GRAB_RADIUS = 16;
 static constexpr int GRAB_SIZE = GRAB_RADIUS * 2 + 1;
 static constexpr int MAGNIFY = 4;
 
+static QScreen *findScreenAt(const QPoint &pos)
+{
+    for (QScreen *screen : QGuiApplication::screens()) {
+        if (screen->geometry().contains(pos))
+            return screen;
+    }
+    return nullptr;
+}
+
+static qreal scaleFactor()
+{
+    QScreen *screen = findScreenAt(QCursor::pos());
+    if (screen)
+        return screen->devicePixelRatio();
+
+    return 1.0;
+}
+
 ColorPicker::ColorPicker()
 {
     setWindowFlags(Qt::Window | Qt::X11BypassWindowManagerHint);
     setAttribute(Qt::WA_DeleteOnClose);
     setFixedSize(GRAB_SIZE * MAGNIFY, GRAB_SIZE * MAGNIFY);
+
+    mScaleFactor = scaleFactor();
 
     mTimer = new QTimer(this);
     mTimer->setInterval(10);
@@ -83,7 +103,8 @@ void ColorPicker::keyPressEvent(QKeyEvent *event)
 void ColorPicker::paintEvent(QPaintEvent *event)
 {
     QPainter painter(this);
-    QPixmap pix = mPixmap.scaled(GRAB_SIZE * MAGNIFY, GRAB_SIZE * MAGNIFY);
+    QPixmap pix = mPixmap.scaled(GRAB_SIZE * mScaleFactor * MAGNIFY,
+                                 GRAB_SIZE * mScaleFactor * MAGNIFY);
     painter.drawPixmap(0, 0, pix);
 
     painter.setPen(Qt::darkGray);
@@ -102,18 +123,9 @@ void ColorPicker::paintEvent(QPaintEvent *event)
 void ColorPicker::emitColorChanged()
 {
     QImage image = mPixmap.toImage();
-    QColor color = QColor(image.pixel(GRAB_RADIUS, GRAB_RADIUS));
+    QColor color = image.pixelColor(GRAB_RADIUS * mScaleFactor,
+                                    GRAB_RADIUS * mScaleFactor); // introduced in Qt 5.6
     colorChanged(color);
-}
-
-static QScreen *findScreenAt(const QPoint &pos)
-{
-    for (QScreen *screen : QGuiApplication::screens()) {
-        if (screen->geometry().contains(pos)) {
-            return screen;
-        }
-    }
-    return nullptr;
 }
 
 void ColorPicker::updatePosition()
@@ -141,6 +153,7 @@ void ColorPicker::updatePosition()
     move(newPos);
 
     WId wid = QApplication::desktop()->winId();
+
     mPixmap = screen->grabWindow(wid, pos.x() - GRAB_SIZE / 2, pos.y() - GRAB_SIZE / 2, GRAB_SIZE, GRAB_SIZE);
     update();
 }
