@@ -1,5 +1,6 @@
+build*/
 .*.swp
 *.pyc
 ui_*.py
-build
 CMakeLists.txt.user
+compile_commands.json
