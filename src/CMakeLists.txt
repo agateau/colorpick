@@ -3,6 +3,18 @@ include(ECMAddAppIcon)
 add_subdirectory(icons)
 
 # Sources
+set(colorpick_HDRS
+    colorspace.h
+    coloreditor.h
+    colorpicker.h
+    contrastpreview.h
+    hsvcolorspace.h
+    imagegradientselector.h
+    rgbcolorspace.h
+    componenteditor.h
+    window.h
+)
+
 set(colorpick_SRCS
     colorspace.cpp
     coloreditor.cpp
@@ -33,7 +45,10 @@ ecm_add_app_icon(
 
 qt5_add_resources(colorpick_SRCS app.qrc)
 
-add_executable(colorpick ${colorpick_SRCS})
+add_executable(colorpick
+    ${colorpick_HDRS}
+    ${colorpick_SRCS}
+)
 
 target_link_libraries(colorpick Qt5::Core Qt5::Widgets
     KF5::GuiAddons
