@@ -5,7 +5,6 @@
 ImageGradientSelector::ImageGradientSelector(QWidget *parent)
     : KSelector(parent)
 {
-
 }
 
 void ImageGradientSelector::setImage(const QImage &image)

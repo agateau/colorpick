@@ -4,6 +4,7 @@ project(Colorpick
     LANGUAGES CXX
 )
 string(TOLOWER ${PROJECT_NAME} PROJECT_ID)
+set(APPSTREAM_ID "com.agateau.${PROJECT_ID}")
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Woverloaded-virtual")
 set(CMAKE_CXX_STANDARD 17) #Qt6 needs C++17
@@ -50,27 +51,33 @@ set(PROJECT_SOURCES
     src/window.cpp
 )
 set(PROJECT_RESOURCES resources/app.qrc)
-#===============================================================================
-# Resources
-#===============================================================================
-include(ECMAddAppIcon)
-ecm_add_app_icon(PROJECT_SOURCES ICONS
-    resources/icons/1024-apps-${PROJECT_ID}.png
-    resources/icons/256-apps-${PROJECT_ID}.png
-    resources/icons/32-apps-${PROJECT_ID}.png
-    resources/icons/sc-apps-${PROJECT_ID}.svg
-)
-source_group("Resource Files" FILES
-    ${PROJECT_RESOURCES}
-)
-#===============================================================================
-# Build
-#===============================================================================
-add_executable(${PROJECT_NAME}
+set(PROJECT_ALL_FILES
     ${PROJECT_HEADERS}
     ${PROJECT_SOURCES}
     ${PROJECT_RESOURCES}
 )
+#===============================================================================
+# Resources
+#===============================================================================
+if (UNIX AND NOT APPLE)
+    include(ECMAddAppIcon)
+    ecm_add_app_icon(PROJECT_SOURCES ICONS
+        resources/icons/1024-apps-${PROJECT_ID}.png
+        resources/icons/256-apps-${PROJECT_ID}.png
+        resources/icons/32-apps-${PROJECT_ID}.png
+        resources/icons/sc-apps-${PROJECT_ID}.svg
+    )
+endif()
+source_group("Resource Files" FILES ${PROJECT_RESOURCES})
+#===============================================================================
+# Build
+#===============================================================================
+if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
+    qt_add_executable(${PROJECT_NAME} MANUAL_FINALIZATION ${PROJECT_ALL_FILES})
+else()
+    add_executable(${PROJECT_NAME} ${PROJECT_ALL_FILES})
+endif()
+
 target_include_directories(${PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_BINARY_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}
@@ -81,29 +88,53 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     KF${QT_VERSION_MAJOR}::GuiAddons
     KF${QT_VERSION_MAJOR}::WidgetsAddons
 )
+include(GNUInstallDirs)
 if (UNIX AND NOT APPLE)
-    include(GNUInstallDirs)
-    set(PROJECT_DATA_DIR "${CMAKE_INSTALL_FULL_DATADIR}/${PROJECT_ID}")
+    set(PROJECT_DATA_DIR "${CMAKE_INSTALL_FULL_DATADIR}/${PROJECT_ID}") # Needed to find translations
 else()
-    #TODO: macOS and Windows
+    #TODO: macOS and Windows translation system dirs or as bundled resource?
 endif()
 
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "${PROJECT_ID}")
 target_compile_definitions(${PROJECT_NAME} PRIVATE PROJECT_DATA_DIR="${PROJECT_DATA_DIR}")
 #===============================================================================
+# Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
+# If you are developing for iOS or macOS you should consider setting an explicit,
+# fixed bundle identifier manually though.
+#
+# NOTE: there is no need for if(WIN32 OR APPLE)
+#===============================================================================
+if(${QT_VERSION} VERSION_LESS 6.1.0)
+    set(BUNDLE_ID_OPTION MACOSX_BUNDLE_GUI_IDENTIFIER "${APPSTREAM_ID}")
+endif()
+set_target_properties(${PROJECT_NAME} PROPERTIES
+    ${BUNDLE_ID_OPTION}
+    MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
+    MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
+    MACOSX_BUNDLE TRUE
+    WIN32_EXECUTABLE TRUE
+)
+if(QT_VERSION_MAJOR GREATER_EQUAL 6)
+    qt_finalize_executable(${PROJECT_NAME})
+endif()
+#===============================================================================
 # Install
 #===============================================================================
-include(ECMInstallIcons)
+install(TARGETS ${PROJECT_NAME}
+    BUNDLE DESTINATION .
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+)
 if (UNIX AND NOT APPLE)
-    install(TARGETS ${PROJECT_NAME}
-        DESTINATION ${CMAKE_INSTALL_BINDIR}
-    )
     install(FILES "resources/freedesktop/${PROJECT_ID}.desktop"
         DESTINATION "${CMAKE_INSTALL_DATADIR}/applications"
     )
+    include(ECMInstallIcons)
     ecm_install_icons(ICONS "sc-apps-${PROJECT_ID}.svg"
         DESTINATION "${CMAKE_INSTALL_DATADIR}/icons"
     )
+else()
+    # TODO: macOS and Windows icons?
 endif()
 #===============================================================================
 # Project information

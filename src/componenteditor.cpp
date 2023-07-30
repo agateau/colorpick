@@ -72,7 +72,7 @@ void ComponentEditor::setColor(const QColor &newColor)
             mComponentSpinBoxes[row]->blockSignals(false);
         }
         updateSelectorGradients();
-        colorChanged(newColor);
+        emit colorChanged(newColor);
     }
 }
 
@@ -101,5 +101,5 @@ void ComponentEditor::updateSelectorGradients()
 void ComponentEditor::updateFromSelectors()
 {
     updateSelectorGradients();
-    colorChanged(color());
+    emit colorChanged(color());
 }

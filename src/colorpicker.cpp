@@ -3,7 +3,9 @@
 #include <QApplication>
 #include <QCursor>
 #include <QDebug>
+#if QT_VERSION < 0x060000
 #include <QDesktopWidget>
+#endif
 #include <QImage>
 #include <QKeyEvent>
 #include <QMouseEvent>
@@ -100,23 +102,27 @@ void ColorPicker::keyPressEvent(QKeyEvent *event)
     QCursor::setPos(pos.x() + dx, pos.y() + dy);
 }
 
-void ColorPicker::paintEvent(QPaintEvent *event)
+void ColorPicker::paintEvent(QPaintEvent *)
 {
     QPainter painter(this);
+
+    // Draw content
     QPixmap pix = mPixmap.scaled(GRAB_SIZE * mScaleFactor * MAGNIFY,
                                  GRAB_SIZE * mScaleFactor * MAGNIFY);
     painter.drawPixmap(0, 0, pix);
 
+    // Draw outer border
     painter.setPen(Qt::darkGray);
     QRect rct = rect().adjusted(0, 0, -1, -1);
     painter.drawRect(rct);
 
+    // Draw inner border
     painter.setPen(Qt::white);
     rct = rct.adjusted(1, 1, -1, -1);
     painter.drawRect(rct);
 
+    // Draw centered cursor
     painter.setCompositionMode(QPainter::RasterOp_SourceXorDestination);
-    painter.setPen(Qt::white);
     painter.drawRect(GRAB_RADIUS * MAGNIFY - 1, GRAB_RADIUS * MAGNIFY - 1, MAGNIFY + 1, MAGNIFY + 1);
 }
 
@@ -125,7 +131,7 @@ void ColorPicker::emitColorChanged()
     QImage image = mPixmap.toImage();
     QColor color = image.pixelColor(GRAB_RADIUS * mScaleFactor,
                                     GRAB_RADIUS * mScaleFactor); // introduced in Qt 5.6
-    colorChanged(color);
+    emit colorChanged(color);
 }
 
 void ColorPicker::updatePosition()
@@ -152,7 +158,11 @@ void ColorPicker::updatePosition()
 
     move(newPos);
 
+#if QT_VERSION < 0x060000
     WId wid = QApplication::desktop()->winId();
+#else
+    WId wid = 0;
+#endif
 
     mPixmap = screen->grabWindow(wid, pos.x() - GRAB_SIZE / 2, pos.y() - GRAB_SIZE / 2, GRAB_SIZE, GRAB_SIZE);
     update();

@@ -118,7 +118,7 @@ void ColorEditor::setColor(const QColor &color)
     if (mColor != color) {
         mColor = color;
         updateFromColor();
-        colorChanged(mColor);
+        emit colorChanged(mColor);
     }
 }
 
@@ -156,32 +156,33 @@ void ColorEditor::startPicking()
 
 void ColorEditor::fillCopyMenu()
 {
+#if QT_VERSION < 0x060000
+    typedef qreal float_t; // double
+#else
+    typedef float float_t;
+#endif
     mCopyMenu->clear();
     int r, g, b;
-    qreal rf, gf, bf;
+    float_t rf, gf, bf;
     mColor.getRgb(&r, &g, &b);
     mColor.getRgbF(&rf, &gf, &bf);
 
-    auto myfloat = [](qreal value) {
-        return QString::number(value, 'g', 3);
-    };
-
-    auto hex = [](int value) {
-        return QString::number(value, 16).rightJustified(2, '0');
-    };
+    auto constexpr ftoa = [](float value) { return QString::number(value, 'g', 3); };
+    auto constexpr htoa = [](int value) { return QString::number(value, 16).rightJustified(2, '0'); };
+    auto constexpr itoa = [](int value) { return QString::number(value); };
 
     auto addColorAction = [this](const QString &text, const QString &value) {
-        QString fullText = ColorEditor::tr("%1: %2").arg(text, value);
+        QString fullText = QString("%1: %2").arg(text, value);
         QAction *action = mCopyMenu->addAction(fullText);
         connect(action, &QAction::triggered, this, [value]() {
             QApplication::clipboard()->setText(value);
         });
     };
 
-    addColorAction(tr("Inkscape"), hex(r) + hex(g) + hex(b) + hex(255));
-    addColorAction(tr("Hexa with #"), "#" + hex(r) + hex(g) + hex(b));
-    addColorAction(tr("Quoted hexa with #"), "\"#" + hex(r) + hex(g) + hex(b) + "\"");
-    addColorAction(tr("Float values"), QString("%1, %2, %3").arg(myfloat(rf), myfloat(gf), myfloat(bf)));
-    addColorAction(tr("Int values"), QString("%1, %2, %3").arg(r).arg(g).arg(b));
-    addColorAction(tr("CSS RGB Value"), QString("rgb(%1, %2, %3)").arg(r).arg(g).arg(b));
+    addColorAction(tr("Inkscape"), htoa(r) + htoa(g) + htoa(b) + htoa(255));
+    addColorAction(tr("Hexa with #"), "#" + htoa(r) + htoa(g) + htoa(b));
+    addColorAction(tr("Quoted hexa with #"), "\"#" + htoa(r) + htoa(g) + htoa(b) + "\"");
+    addColorAction(tr("Float values"), QString("%1, %2, %3").arg(ftoa(rf), ftoa(gf), ftoa(bf)));
+    addColorAction(tr("Int values"), QString("%1, %2, %3").arg(itoa(r), itoa(g), itoa(b)));
+    addColorAction(tr("CSS RGB Value"), QString("rgb(%1, %2, %3)").arg(itoa(r), itoa(g), itoa(b)));
 }

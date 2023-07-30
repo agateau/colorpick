@@ -2,5 +2,4 @@
 
 ColorSpace::~ColorSpace()
 {
-
 }
