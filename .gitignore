@@ -1,5 +1,4 @@
 build*/
-.*.swp
 *.pyc
 ui_*.py
 CMakeLists.txt.user
