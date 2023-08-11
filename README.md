@@ -17,6 +17,8 @@ formats.
 
 Colorpick is managed using the [lightweight project management policy][1].
 
+Currently, working only under X11 based systems.
+
 ## Requirements
 
 - CMake
