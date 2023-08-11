@@ -40,7 +40,6 @@ void ContrastPreview::setForegroundColor(const QColor &color)
     }
 }
 
-
 void ContrastPreview::updatePreview()
 {
     updateRatioLabel();

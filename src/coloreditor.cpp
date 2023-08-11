@@ -118,7 +118,7 @@ void ColorEditor::setColor(const QColor &color)
     if (mColor != color) {
         mColor = color;
         updateFromColor();
-        colorChanged(mColor);
+        emit colorChanged(mColor);
     }
 }
 

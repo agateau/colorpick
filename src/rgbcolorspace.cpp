@@ -10,7 +10,6 @@ RgbColorSpace *RgbColorSpace::instance()
 
 RgbColorSpace::RgbColorSpace()
 {
-
 }
 
 QString RgbColorSpace::name(int idx) const

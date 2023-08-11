@@ -94,20 +94,24 @@ void ColorPicker::keyPressEvent(QKeyEvent *event)
 void ColorPicker::paintEvent(QPaintEvent *event)
 {
     QPainter painter(this);
+
+    // Draw content
     QPixmap pix = mPixmap.scaled(GRAB_SIZE * mScaleFactor * MAGNIFY,
                                  GRAB_SIZE * mScaleFactor * MAGNIFY);
     painter.drawPixmap(0, 0, pix);
 
+    // Draw outer border
     painter.setPen(Qt::darkGray);
     QRect rct = rect().adjusted(0, 0, -1, -1);
     painter.drawRect(rct);
 
+    // Draw inner border
     painter.setPen(Qt::white);
     rct = rct.adjusted(1, 1, -1, -1);
     painter.drawRect(rct);
 
+    // Draw centered cursor
     painter.setCompositionMode(QPainter::RasterOp_SourceXorDestination);
-    painter.setPen(Qt::white);
     painter.drawRect(GRAB_RADIUS * MAGNIFY - 1, GRAB_RADIUS * MAGNIFY - 1, MAGNIFY + 1, MAGNIFY + 1);
 }
 
@@ -115,7 +119,7 @@ void ColorPicker::emitColorChanged()
 {
     QImage image = mPixmap.toImage();
     QColor color = image.pixelColor(GRAB_RADIUS * mScaleFactor, GRAB_RADIUS * mScaleFactor);
-    colorChanged(color);
+    emit colorChanged(color);
 }
 
 void ColorPicker::updatePosition()

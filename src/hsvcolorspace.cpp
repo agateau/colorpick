@@ -10,7 +10,6 @@ HsvColorSpace *HsvColorSpace::instance()
 
 HsvColorSpace::HsvColorSpace()
 {
-
 }
 
 QString HsvColorSpace::name(int idx) const
