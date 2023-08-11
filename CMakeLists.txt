@@ -11,6 +11,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 #
 # Qt
 #
+option(PROJECT_TRANSLATIONS_UPDATE "Update source translations [default: OFF]" OFF)
 set(PROJECT_QT_VERSION 5 CACHE STRING "Qt version to use: 5 (default) or 6")
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
@@ -49,7 +50,6 @@ set(PROJECT_SOURCES
     src/window.cpp
     src/main.cpp
 )
-set(PROJECT_RESOURCES resources/app.qrc)
 
 #
 # Resources
@@ -61,14 +61,58 @@ ecm_add_app_icon(PROJECT_SOURCES ICONS
     resources/icons/32-apps-${PROJECT_ID}.png
     resources/icons/sc-apps-${PROJECT_ID}.svg
 )
-source_group("Resource Files" FILES ${PROJECT_RESOURCES})
+set(PROJECT_RESOURCES
+    resources/app.qrc
+    resources/freedesktop/${PROJECT_ID}.desktop
+)
+set(PROJECT_TRANSLATION_TEMPLATE resources/translations/${PROJECT_ID}.ts)
+file(GLOB PROJECT_TRANSLATION_SOURCES "resources/translations/${PROJECT_ID}_*.ts")
+
+source_group("Resource Files" FILES
+    ${PROJECT_RESOURCES}
+    ${PROJECT_TRANSLATION_TEMPLATE}
+    ${PROJECT_TRANSLATION_SOURCES}
+)
+
+#
+# Translations
+#
+if(${QT_VERSION_MAJOR} VERSION_LESS 6.2)
+    if(PROJECT_TRANSLATIONS_UPDATE)
+        # the first call creates/updates the <appname>.ts template file, it should not be compiled,
+        # the other the actual <appname>_<country-code>.ts translation files to be installed later.
+        qt_create_translation(QM_DUMMY
+            ${PROJECT_SOURCES}
+            ${PROJECT_TRANSLATION_TEMPLATE}
+        )
+        qt_create_translation(PROJECT_QM_FILES
+            ${PROJECT_SOURCES}
+            ${PROJECT_TRANSLATION_SOURCES}
+        )
+        add_custom_target(TemplateUpdate ALL DEPENDS ${QM_DUMMY})
+    endif()
+    qt_add_translation(PROJECT_QM_FILES ${PROJECT_TRANSLATION_SOURCES})
+else()
+    # FIXME: updating the .ts files seems not to work in Qt6, even by using the deprecated
+    #        qt_create_translation() used with Qt5. It's not clear where qt_add_lupdate() call
+    #        should be placed, qt_add_lrelease() wants to be called after add_executable() for sure.
+    if(PROJECT_TRANSLATIONS_UPDATE)
+        qt_add_lupdate(${PROJECT_NAME}
+            TS_FILES ${PROJECT_TRANSLATION_TEMPLATE} ${PROJECT_TRANSLATION_SOURCES}
+            SOURCES ${PROJECT_SOURCES}
+        )
+    endif()
+endif()
 
 #
 # Build
 #
 add_executable(${PROJECT_NAME}
-    ${PROJECT_SOURCES}
+    ${PROJECT_QM_FILES}
     ${PROJECT_RESOURCES}
+    ${PROJECT_SOURCES}
+    ${PROJECT_TRANSLATION_SOURCES}
+    ${PROJECT_TRANSLATION_TEMPLATE}
 )
 target_include_directories(${PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_BINARY_DIR}
@@ -91,6 +135,13 @@ set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "${PROJECT_ID}")
 target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Woverloaded-virtual)
 target_compile_definitions(${PROJECT_NAME} PRIVATE PROJECT_DATA_DIR="${PROJECT_DATA_DIR}")
 
+if(${QT_VERSION_MAJOR} VERSION_GREATER_EQUAL 6.2)
+    qt_add_lrelease(${PROJECT_NAME}
+        TS_FILES ${PROJECT_TRANSLATION_SOURCES}
+        QM_FILES_OUTPUT_VARIABLE PROJECT_QM_FILES
+    )
+endif()
+
 #
 # Install
 #
@@ -102,6 +153,9 @@ if (UNIX AND NOT APPLE)
     install(FILES "resources/freedesktop/${PROJECT_ID}.desktop"
         DESTINATION "${CMAKE_INSTALL_DATADIR}/applications"
     )
+    install(FILES "${PROJECT_QM_FILES}"
+        DESTINATION "${CMAKE_INSTALL_DATADIR}/${PROJECT_ID}/translations"
+    )
     ecm_install_icons(ICONS "sc-apps-${PROJECT_ID}.svg"
         DESTINATION "${CMAKE_INSTALL_DATADIR}/icons"
     )
@@ -111,7 +165,8 @@ endif()
 # Project information
 #
 message(STATUS "
-Qt version:                  ${QT_VERSION}
-Build type:                  ${CMAKE_BUILD_TYPE}
-Install prefix:              ${CMAKE_INSTALL_PREFIX}
+Qt version:                       ${QT_VERSION}
+Build type:                       ${CMAKE_BUILD_TYPE}
+Install prefix:                   ${CMAKE_INSTALL_PREFIX}
+Update translations before build: ${PROJECT_TRANSLATIONS_UPDATE}
 ")

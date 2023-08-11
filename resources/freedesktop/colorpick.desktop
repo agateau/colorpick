@@ -1,9 +1,13 @@
 [Desktop Entry]
 Type=Application
 Version=1.0
-Name=Colorpick
-GenericName=A color picker
 Icon=colorpick
 TryExec=colorpick
 Exec=colorpick
 Categories=Qt;KDE;Graphics;Utility;
+
+Name=Colorpick
+GenericName=Color picker
+Comment=Color picker with contrast control
+GenericName[it]=Selettore di colori
+Comment[it]=Selettore di colori con controllo del contrasto

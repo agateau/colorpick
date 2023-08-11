@@ -171,7 +171,7 @@ void ColorEditor::fillCopyMenu()
     };
 
     auto addColorAction = [this](const QString &text, const QString &value) {
-        QString fullText = ColorEditor::tr("%1: %2").arg(text, value);
+        QString fullText = QString("%1: %2").arg(text, value);
         QAction *action = mCopyMenu->addAction(fullText);
         connect(action, &QAction::triggered, this, [value]() {
             QApplication::clipboard()->setText(value);
