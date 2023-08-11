@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop">
+  <id>colorpick</id>
+  <metadata_license>FSFAP</metadata_license>
+  <project_license>BSD 3-Clause</project_license>
+  <name>Colorpick</name>
+  <summary>A color picker with a builtin loop and a contrast checker.</summary>
+  <content_rating type="oars-1.0" />
+  <developer_name>Aurélien Gâteau</developer_name>
+  <update_contact>mail@agateau.com</update_contact>
+  <url type="homepage">https://github.com/agateau/colorpick/</url>
+  <screenshots>
+    <screenshot type="default">
+      <caption>Screenshot</caption>
+      <image>https://github.com/agateau/colorpick/blob/master/screenshots/contrast.png</image>
+    </screenshot>
+  </screenshots>
+  <provides>
+    <binary>colorpick</binary>
+  </provides>
+  <launchable type="desktop-id">colorpick.desktop</launchable>
+</component>
