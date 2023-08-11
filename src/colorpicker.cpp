@@ -3,7 +3,9 @@
 #include <QApplication>
 #include <QCursor>
 #include <QDebug>
+#if QT_VERSION < 0x060000
 #include <QDesktopWidget>
+#endif
 #include <QImage>
 #include <QKeyEvent>
 #include <QMouseEvent>
@@ -145,9 +147,11 @@ void ColorPicker::updatePosition()
     }
 
     move(newPos);
-
+#if QT_VERSION < 0x060000
     WId wid = QApplication::desktop()->winId();
-
+#else
+    WId wid = 0;
+#endif
     mPixmap = screen->grabWindow(wid, pos.x() - GRAB_SIZE / 2, pos.y() - GRAB_SIZE / 2, GRAB_SIZE, GRAB_SIZE);
     update();
 }
