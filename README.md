@@ -1,3 +1,9 @@
+# ⚠  Colorpick now lives at [qtilities/colorpick](https://github.com/qtilities/colorpick)!
+
+Thanks to redtide for taking it over.
+
+---
+
 # Colorpick: Color picker and contrast checker
 
 ![Contrast check](screenshots/contrast.png)
