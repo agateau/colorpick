@@ -1,6 +1,5 @@
 #include "contrastpreview.h"
-
-#include <KColorUtils>
+#include "hcycolorspace.h"
 
 #include <QLabel>
 #include <QLocale>
@@ -49,7 +48,14 @@ void ContrastPreview::updatePreview()
 
 void ContrastPreview::updateRatioLabel()
 {
-    qreal ratio = KColorUtils::contrastRatio(mBackgroundColor, mForegroundColor);
+    hcy::color_comp_t lumaBg = hcy::luminance(mBackgroundColor.redF(),
+                                              mBackgroundColor.greenF(),
+                                              mBackgroundColor.blueF());
+    hcy::color_comp_t lumaFg = hcy::luminance(mForegroundColor.redF(),
+                                              mForegroundColor.greenF(),
+                                              mForegroundColor.blueF());
+    qreal ratio = hcy::contrast_ratio(lumaBg, lumaFg);
+
     QString level;
     if (ratio < ACCEPTABLE_CONTRAST_RATIO) {
         level = tr("Bad");

@@ -20,7 +20,6 @@ find_package(Qt${QT_VERSION_MAJOR} CONFIG REQUIRED Core LinguistTools Widgets)
 #
 # Other dependencies
 #
-find_package(KF${QT_VERSION_MAJOR}GuiAddons CONFIG REQUIRED)
 find_package(KF${QT_VERSION_MAJOR}WidgetsAddons CONFIG REQUIRED)
 find_package(ECM REQUIRED NO_MODULE)
 list(APPEND CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
@@ -39,6 +38,7 @@ set(PROJECT_SOURCES
     src/componenteditor.cpp
     src/contrastpreview.h
     src/contrastpreview.cpp
+    src/hcycolorspace.h
     src/hsvcolorspace.h
     src/hsvcolorspace.cpp
     src/imagegradientselector.h
@@ -77,7 +77,6 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 target_link_libraries(${PROJECT_NAME} PRIVATE
     Qt::Core
     Qt::Widgets
-    KF${QT_VERSION_MAJOR}::GuiAddons
     KF${QT_VERSION_MAJOR}::WidgetsAddons
 )
 if (UNIX AND NOT APPLE)
