@@ -23,30 +23,37 @@ formats.
 
 Colorpick is managed using the [lightweight project management policy][1].
 
-[1]: http://agateau.com/2014/lightweight-project-management
+Currently, working only under X11 based systems.
 
 ## Requirements
 
 - CMake
-- Qt 5
-- KF5GuiAddons
-- KF5WidgetsAddons
+- Qt 5/6
+- [KGuiAddons][2]
+- [KWidgetsAddons][3]
 
 ## Installation
 
 Create a build directory and change to it:
 
-    mkdir build
-    cd build
+```bash
+mkdir build
+cd build
+```
 
-Run CMake and build:
+By default, Qt5 is used for build, otherwise change it by adding `-DPROJECT_QT_VERSION=6`
+to the following CMake configure command:
 
-    cmake path/to/colorpick
-    make
+```bash
+cmake path/to/colorpick
+make
+```
 
 Install (must be run as root if installing to /usr or /usr/local):
 
-    make install
+```bash
+make install
+```
 
 ## Author
 
@@ -55,3 +62,8 @@ Aurélien Gâteau
 ## License
 
 BSD
+
+
+[1]: http://agateau.com/2014/lightweight-project-management
+[2]: https://invent.kde.org/frameworks/kguiaddons/
+[3]: https://invent.kde.org/frameworks/kwidgetsaddons/
