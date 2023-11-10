@@ -48,6 +48,19 @@ Install (must be run as root if installing to /usr or /usr/local):
 
     make install
 
+## Translations
+
+To contribute language translations, use Qt Linguist and/or manually:
+
+- Copy `resource/translations/colorpick.ts` language template to
+  `resource/translations/colorpick_<country-code>.ts`, e.g.: `colorpick_de.ts`
+- Set the language in the file:
+  from `<TS version="2.1">` to `<TS version="2.1" language="de">`
+- Translate it and the `resources/freedesktop/colorpick.desktop` file by adding
+  e.g.: `GenericName[de]`, `Comment[de]` and optionally `Name[de]`
+  (see the existing translations as reference)
+- Create a Pull Request with your changes.
+
 ## Author
 
 Aurélien Gâteau
