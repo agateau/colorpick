@@ -102,6 +102,9 @@ if (UNIX AND NOT APPLE)
     install(FILES "resources/freedesktop/${PROJECT_ID}.desktop"
         DESTINATION "${CMAKE_INSTALL_DATADIR}/applications"
     )
+    install(FILES "resources/freedesktop/${PROJECT_ID}.appdata.xml"
+        DESTINATION "${CMAKE_INSTALL_DATADIR}/metainfo"
+    )
     ecm_install_icons(ICONS "sc-apps-${PROJECT_ID}.svg"
         DESTINATION "${CMAKE_INSTALL_DATADIR}/icons"
     )
